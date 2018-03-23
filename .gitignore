@@ -1,3 +1,11 @@
+# intelliJ
+.idea/
+out/
+target/
+*.iml
+*.class
+build/
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup

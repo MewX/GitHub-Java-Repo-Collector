@@ -34,7 +34,7 @@ public class LightNetwork {
     }
 
     public static HashMap<String, String> lightHttpRequest(final String url) {
-        HashMap<String, String> ret = new HashMap<String, String>();
+        HashMap<String, String> ret = new HashMap<>();
 
         InputStream inputStream;
         try {
@@ -49,7 +49,7 @@ public class LightNetwork {
             } else if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
                 System.out.println("403 forbidden: " + System.currentTimeMillis());
                 System.exit(-1);
-                return null;
+                return ret;
             } else if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 System.out.println("ERROR: got " + httpURLConnection.getResponseCode() + " in " + url);
                 inputStream = httpURLConnection.getErrorStream();

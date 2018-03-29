@@ -1,3 +1,5 @@
+package au.edu.uofa.sei.assignment1;
+
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
@@ -13,8 +15,8 @@ import java.util.zip.GZIPInputStream;
  **/
 
 public class LightNetwork {
-    static final String HEADER_CONTENT = "Content";
-    static final String USER_AGENT = "UofA SEI 2018 Project 1";
+    public static final String HEADER_CONTENT = "Content";
+    public static final String USER_AGENT = "UofA SEI 2018 Project 1";
 
     /**
      * Encode UTF-8 character to http postable style. For example: "妹" = "%E5%A6%B9"
@@ -33,9 +35,15 @@ public class LightNetwork {
         return enc;
     }
 
-    public static HashMap<String, String> lightHttpRequest(final String url) {
-        HashMap<String, String> ret = new HashMap<>();
+    public static Map<String, String> lightHttpRequest(final Map<String, String> previousRequestResult, final String url) {
+        waitUntilRefresh(previousRequestResult);
+        return lightHttpRequest(url);
+    }
 
+    public static Map<String, String> lightHttpRequest(final String url) {
+        System.err.println(" requesting: " + url);
+
+        HashMap<String, String> ret = new HashMap<>();
         InputStream inputStream;
         try {
             URL localURL = new URL(url);
@@ -92,5 +100,16 @@ public class LightNetwork {
      */
     public static String lightHttpDownload(final String url) {
         return lightHttpRequest(url).get(HEADER_CONTENT);
+    }
+
+    public static void waitUntilRefresh(Map<String, String> requestResult) {
+        if (requestResult == null) return;
+
+        long remaining  = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_REMAINING));
+        long total = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_LIMIT));
+        long resetTime = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_RESET));
+        if (remaining <= 0) {
+            System.err.format("  waiting for cooling down ... (used: %d; cooling down: %d/%d\n", total, System.currentTimeMillis() / 1000, resetTime);
+        }
     }
 }

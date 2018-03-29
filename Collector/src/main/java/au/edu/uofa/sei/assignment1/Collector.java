@@ -1,3 +1,5 @@
+package au.edu.uofa.sei.assignment1;
+
 import java.util.Map;
 
 public class Collector {
@@ -6,6 +8,10 @@ public class Collector {
         // curl -i 'https://api.github.com/users/whatever?client_id=Iv1.ad6b73b7b61c26f3&client_secret=9ac009128eb89e8c2b0f9d39fddd0378d3dfbdc0'
         // curl 'https://api.github.com/user/repos?page=2&per_page=100'
         // if exceeded: 403 Forbidden -> exit directly
+
+        // because github allows searching for 1000 results only,
+        // therefore, using star size limit can expand the searching results:
+        // https://api.github.com/search/repositories?q=language:java+stars:%3C1534&sort=stars&order=desc&per_page=100&page=10
 
         Map<String, String> test = LightNetwork.lightHttpRequest("https://api.github.com/search/repositories?q=language:java&sort=stars&order=desc" + Constants.APP_ID_FOR_QUERY);
         System.out.println("limit: " + test.getOrDefault(Constants.HEADER_X_RATELIMIT_LIMIT, "0"));

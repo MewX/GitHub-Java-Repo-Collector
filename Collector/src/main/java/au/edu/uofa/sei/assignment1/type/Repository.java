@@ -41,8 +41,7 @@ public class Repository {
         String result = null;
         Map<String, String> ret = null;
         while (result == null || result.trim().length() == 0 || result.trim().equals("null")) {
-            LightNetwork.waitUntilRefresh(prevReq);
-            ret = LightNetwork.lightHttpRequest(url);
+            ret = LightNetwork.lightHttpRequest(prevReq, url);
             result = ret.get(LightNetwork.HEADER_CONTENT);
         }
         queryDb.insert(TYPE, sb.toString(), result);
@@ -51,12 +50,14 @@ public class Repository {
 
     public static void collectingRepos(QueryDb db) throws SQLException {
 //        int maxStar = 0; // by default from 0
-        int maxStar = 559; // if interrupted, use this line
+        int maxStar = 0; // if interrupted, use this line
 
         for (int nums = 0; nums < 4000; nums += 1000) {
             Map<String, String> prev = null;
             for (int i = 1; i <= 10; i++) {
                 System.err.format("Getting list: p%d(%d+)\n", i, nums);
+                if (prev != null)
+                    System.err.format("(%d/%d)", System.currentTimeMillis() / 1000, Integer.valueOf(prev.getOrDefault(Constants.HEADER_X_RATELIMIT_RESET, "0")));
                 prev = makeRequest(i, maxStar, prev, db);
             }
 

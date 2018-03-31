@@ -115,7 +115,7 @@ public class LightNetwork {
         long resetTime = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_RESET));
         long time = System.currentTimeMillis() / 1000;
         System.err.format("Rem: %d of %d, time: %d resetting at %d\n", remaining, total, time, Integer.valueOf(requestResult.getOrDefault(Constants.HEADER_X_RATELIMIT_RESET, "0")));
-        if (remaining <= 0 && resetTime - time > 0) {
+        if (remaining <= 1 && resetTime - time > 0) {
             System.err.format("  waiting for cooling down ... (used: %d; cooling down: %d/%d\n", total, time, resetTime);
             try {
                 Thread.sleep((resetTime - time + 1) * 1000); // wait

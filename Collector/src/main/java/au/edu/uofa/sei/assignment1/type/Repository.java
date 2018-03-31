@@ -6,6 +6,8 @@ import au.edu.uofa.sei.assignment1.QueryDb;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Repository {
     public static String TYPE = Repository.class.getName();
@@ -30,11 +32,36 @@ public class Repository {
         }
         String url = "https://api.github.com/search/repositories?" + sb.toString() + Constants.APP_ID_FOR_QUERY;
 
+        if (queryDb.checkExistance(TYPE, sb.toString())) {
+            System.err.println("Found existing record, skipped: " + sb.toString());
+            return prevReq;
+        }
+
         // request
         LightNetwork.waitUntilRefresh(prevReq);
         Map<String, String> ret = LightNetwork.lightHttpRequest(url);
         queryDb.insert(TYPE, sb.toString(), ret.get(LightNetwork.HEADER_CONTENT));
 
         return ret;
+    }
+
+    public static void collectingRepos(QueryDb db) throws SQLException {
+        int maxStar = 0;
+
+        for (int nums = 0; nums < 4000; nums += 1000) {
+            Map<String, String> prev = null;
+            for (int i = 1; i <= 10; i++) {
+                System.err.format("Getting list: p%d(%d+)\n", i, nums);
+                prev = makeRequest(i, maxStar, prev, db);
+            }
+
+            // update maxStar
+            Pattern p = Pattern.compile("stargazers_count\": (\\d+?),");
+            Matcher m = p.matcher(prev.get(LightNetwork.HEADER_CONTENT));
+            while (m.find()) {
+                int temp = Integer.valueOf(m.group(1));
+                if (maxStar == 0 || temp < maxStar) maxStar = temp;
+            }
+        }
     }
 }

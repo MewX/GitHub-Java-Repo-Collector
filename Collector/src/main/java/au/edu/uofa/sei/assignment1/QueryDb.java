@@ -12,7 +12,6 @@ public class QueryDb {
     public void openConnection(String fileName) throws SQLException {
         conn = DriverManager.getConnection("jdbc:sqlite:" + fileName);
 
-        // TODO: init tables
         final String TABLE_CREATING = "CREATE TABLE IF NOT EXISTS queries (\n" +
                 "  id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "  type VARCHAR NOT NULL,\n" +
@@ -30,6 +29,7 @@ public class QueryDb {
         insert.setString(1, type);
         insert.setString(2, requestParams);
         insert.setString(3, content);
+        insert.execute();
     }
 
     public ResultSet select(String type) throws SQLException {
@@ -37,6 +37,14 @@ public class QueryDb {
         PreparedStatement select = conn.prepareStatement(SELECT);
         select.setString(1, type);
         return select.executeQuery();
+    }
+
+    public boolean checkExistance(String type, String requestParams) throws SQLException {
+        final String CHECK = "select count(*) from queries where type = ? and params = ?;";
+        PreparedStatement check = conn.prepareStatement(CHECK);
+        check.setString(1, type);
+        check.setString(2, requestParams);
+        return check.executeQuery().getLong(1) != 0;
     }
 
     public void closeConnection() {

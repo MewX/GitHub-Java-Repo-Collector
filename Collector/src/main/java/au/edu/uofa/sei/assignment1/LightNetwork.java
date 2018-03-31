@@ -81,7 +81,12 @@ public class LightNetwork {
 
             // save to the map
             for (Map.Entry<String, List<String>> entry : httpURLConnection.getHeaderFields().entrySet()) {
-                ret.put(entry.getKey(), "" + entry.getValue());
+                String headerName = entry.getKey();
+                StringBuilder sb = new StringBuilder();
+                for (String value : entry.getValue()) {
+                    sb.append(value).append(" ");
+                }
+                ret.put(headerName, sb.toString().trim());
             }
 
             ret.put(HEADER_CONTENT, new String(byteArrayOutputStream.toByteArray(), "UTF-8"));
@@ -108,8 +113,14 @@ public class LightNetwork {
         long remaining  = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_REMAINING));
         long total = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_LIMIT));
         long resetTime = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_RESET));
-        if (remaining <= 0) {
-            System.err.format("  waiting for cooling down ... (used: %d; cooling down: %d/%d\n", total, System.currentTimeMillis() / 1000, resetTime);
+        long time = System.currentTimeMillis() / 1000;
+        if (remaining <= 0 && time - resetTime > 0) {
+            System.err.format("  waiting for cooling down ... (used: %d; cooling down: %d/%d\n", total, time, resetTime);
+            try {
+                Thread.sleep((resetTime - time + 1) * 1000); // wait
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ target/
 *.iml
 *.class
 build/
+classes/
 
 target/
 pom.xml.tag

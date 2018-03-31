@@ -56,8 +56,6 @@ public class Repository {
             Map<String, String> prev = null;
             for (int i = 1; i <= 10; i++) {
                 System.err.format("Getting list: p%d(%d+)\n", i, nums);
-                if (prev != null)
-                    System.err.format("(%d/%d)", System.currentTimeMillis() / 1000, Integer.valueOf(prev.getOrDefault(Constants.HEADER_X_RATELIMIT_RESET, "0")));
                 prev = makeRequest(i, maxStar, prev, db);
             }
 

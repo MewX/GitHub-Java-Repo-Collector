@@ -90,6 +90,7 @@ public class Collector {
 
                 // move back
                 System.err.format("Moving %s back to %s...\n", tempFolderName, finalFolderName);
+                new File(finalFolderName).mkdirs();
                 Files.move(new File(tempFolderName).toPath(), new File(finalFolderName).toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }

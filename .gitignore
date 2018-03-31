@@ -6,6 +6,7 @@ target/
 *.class
 build/
 classes/
+*.db
 
 target/
 pom.xml.tag

@@ -38,15 +38,20 @@ public class Repository {
         }
 
         // request
-        LightNetwork.waitUntilRefresh(prevReq);
-        Map<String, String> ret = LightNetwork.lightHttpRequest(url);
-        queryDb.insert(TYPE, sb.toString(), ret.get(LightNetwork.HEADER_CONTENT));
-
+        String result = null;
+        Map<String, String> ret = null;
+        while (result == null || result.trim().length() == 0 || result.trim().equals("null")) {
+            LightNetwork.waitUntilRefresh(prevReq);
+            ret = LightNetwork.lightHttpRequest(url);
+            result = ret.get(LightNetwork.HEADER_CONTENT);
+        }
+        queryDb.insert(TYPE, sb.toString(), result);
         return ret;
     }
 
     public static void collectingRepos(QueryDb db) throws SQLException {
-        int maxStar = 0;
+//        int maxStar = 0; // by default from 0
+        int maxStar = 559; // if interrupted, use this line
 
         for (int nums = 0; nums < 4000; nums += 1000) {
             Map<String, String> prev = null;
@@ -56,7 +61,7 @@ public class Repository {
             }
 
             // update maxStar
-            Pattern p = Pattern.compile("stargazers_count\": (\\d+?),");
+            Pattern p = Pattern.compile("stargazers_count\"[^\\d]*(\\d+?),");
             Matcher m = p.matcher(prev.get(LightNetwork.HEADER_CONTENT));
             while (m.find()) {
                 int temp = Integer.valueOf(m.group(1));

@@ -49,8 +49,8 @@ public class LightNetwork {
             URL localURL = new URL(url);
 			HttpURLConnection httpURLConnection = (HttpURLConnection)localURL.openConnection();
             httpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
-            httpURLConnection.setConnectTimeout(10000);
-            httpURLConnection.setReadTimeout(10000);
+            httpURLConnection.setConnectTimeout(16000);
+            httpURLConnection.setReadTimeout(16000);
 
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 inputStream = httpURLConnection.getErrorStream();

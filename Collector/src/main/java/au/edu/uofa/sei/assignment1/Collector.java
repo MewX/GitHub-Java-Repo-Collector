@@ -5,15 +5,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 public class Collector {
     static void deleteFolder(File folder) {
@@ -30,7 +33,7 @@ public class Collector {
         folder.delete();
     }
 
-    public static void main(String[] args) throws SQLException, GitAPIException {
+    public static void main(String[] args) throws SQLException, GitAPIException, IOException {
         // curl -iH 'User-Agent: UofA SEI 2018 Project' https://api.github.com -u mseopt:mseoptpassword2018
         // curl -i 'https://api.github.com/users/whatever?client_id=Iv1.ad6b73b7b61c26f3&client_secret=9ac009128eb89e8c2b0f9d39fddd0378d3dfbdc0'
         // curl 'https://api.github.com/user/repos?page=2&per_page=100'
@@ -39,6 +42,9 @@ public class Collector {
         // because github allows searching for 1000 results only,
         // therefore, using star size limit can expand the searching results:
         // https://api.github.com/search/repositories?q=language:java+stars:%3C1534&sort=stars&order=desc&per_page=100&page=10
+        Properties prop = new Properties();
+        prop.setProperty("log4j.rootLogger", "INFO");
+        PropertyConfigurator.configure(prop);
 
         // init db
         QueryDb db = new QueryDb("repo.db");
@@ -57,8 +63,8 @@ public class Collector {
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             for (JsonElement ele : obj.getAsJsonArray("items")) {
                 JsonObject repo = ele.getAsJsonObject();
-                repoNames.add(repo.getAsJsonObject("full_name").getAsString());
-                repoUrls.add(repo.getAsJsonObject("git_url").getAsString());
+                repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
+                repoUrls.add(repo.getAsJsonPrimitive("git_url").getAsString());
             }
         }
 
@@ -82,7 +88,9 @@ public class Collector {
                         .call();
                 result.close();
 
-                // TODO: move back
+                // move back
+                System.err.format("Moving %s back to %s...\n", tempFolderName, finalFolderName);
+                Files.move(new File(tempFolderName).toPath(), new File(finalFolderName).toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
 

@@ -81,7 +81,7 @@ public class Collector {
             String tempFolderName = TEMP_PATH + repoNames.get(i);
             if (!new File(finalFolderName).exists()) {
                 // clone
-                System.err.format("Cloning %s into %s...\n", repoNames.get(i), tempFolderName);
+                System.err.format("(%d/%d) Cloning %s into %s...\n", i, repoNames.size(), repoNames.get(i), tempFolderName);
                 Git result = Git.cloneRepository()
                         .setURI(repoUrls.get(i))
                         .setDirectory(new File(tempFolderName))

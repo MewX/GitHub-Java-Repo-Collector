@@ -1,12 +1,11 @@
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 public class GradleParser {
-    public void parseGradleFile(File file) {
+    public void parseGradleFile(File file, Database db) {
         try {
             // read file
             List<String> lines = FileUtils.readLines(file, "UTF-8");
@@ -41,10 +40,7 @@ public class GradleParser {
 
                         // TODO output results
                         if (dependencyInfo.length == 3) {
-                            System.out.println("GroupId: " + dependencyInfo[0]);
-                            System.out.println("artifactId: " + dependencyInfo[1]);
-                            System.out.println("version: " + dependencyInfo[2]);
-                            System.out.print("\n");
+                            saveDependency(dependencyInfo, db);
                         }
 
                         //move to next line
@@ -54,6 +50,23 @@ public class GradleParser {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void saveDependency(String[] dependency, Database db) {
+        // TODO output results
+//        System.out.println("GroupId: " + dependencyInfo[0]);
+//        System.out.println("artifactId: " + dependencyInfo[1]);
+//        System.out.println("version: " + dependencyInfo[2]);
+//        System.out.print("\n");
+
+        String groupId = dependency[0];
+        String artifactId = dependency[1];
+        String version = dependency[2];
+
+        // TODO modify project name
+        if (!db.checkExistance("test-gradle", groupId, artifactId, version)) {
+            db.insert("test-gradle", groupId, artifactId, version);
         }
     }
 }

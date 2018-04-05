@@ -5,6 +5,11 @@ import java.util.Collection;
 
 public class Parser {
     public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Please specify a folder path to the project!");
+            return;
+        }
+
         // TODO modify file path
         // absolute path of project folder (root folder)
         File inputFile = new File(args[0]);
@@ -22,6 +27,8 @@ public class Parser {
         // store result to database
         Database db = new Database("dependencies.db");
 
+        System.out.println("Processing project: " + projectName);
+
         // get all "pom.xml" and "build.gradle" from sub-folder
         Collection<File> files = FileUtils.listFiles(inputFile, extensions, true);
 
@@ -32,5 +39,7 @@ public class Parser {
                 gradleParser.parseGradleFile(file, db, projectName);
             }
         }
+
+        System.out.println("Finish processing project: " + projectName);
     }
 }

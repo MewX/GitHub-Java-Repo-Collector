@@ -10,8 +10,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class PomParser {
-    public void parsePomFile(File file, Database db) {
+    public void parsePomFile(File file, Database db, String projectName) {
         try {
+            boolean hasDependency = false;
+
             // read in xml file
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder;
@@ -24,18 +26,27 @@ public class PomParser {
             NodeList parents = document.getElementsByTagName("parent");
 
             if (parents.getLength() != 0) {
+                hasDependency = true;
+
                 Element parent = (Element) parents.item(0);
 
-                saveDependency(parent, db);
+                saveDependency(parent, db, projectName);
             }
 
             // dependency tag
             NodeList dependencies = document.getElementsByTagName("dependency");
 
             for (int i = 0; i < dependencies.getLength(); i++) {
+                hasDependency = true;
+
                 Element dependency = (Element) dependencies.item(i);
 
-                saveDependency(dependency, db);
+                saveDependency(dependency, db, projectName);
+            }
+
+            // no dependency found
+            if (!hasDependency) {
+                db.insert(projectName, "no dependency", "no dependency", "no dependency");
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -46,8 +57,7 @@ public class PomParser {
         }
     }
 
-    private void saveDependency(Element element, Database db) {
-        // TODO output results
+    private void saveDependency(Element element, Database db, String projectName) {
 //                System.out.println("GroupId: " + element.getElementsByTagName("groupId").item(0).getTextContent());
 //                System.out.println("artifactId: " + element.getElementsByTagName("artifactId").item(0).getTextContent());
 //                if (element.getElementsByTagName("version").getLength() != 0) {
@@ -62,9 +72,8 @@ public class PomParser {
         String artifactId = element.getElementsByTagName("artifactId").item(0).getTextContent();
         String version = element.getElementsByTagName("version").getLength() != 0 ? element.getElementsByTagName("version").item(0).getTextContent() : "default";
 
-        // TODO modify project name
-        if (!db.checkExistance("test-pom", groupId, artifactId, version)) {
-            db.insert("test-pom", groupId, artifactId, version);
+        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
+            db.insert(projectName, groupId, artifactId, version);
         }
     }
 }

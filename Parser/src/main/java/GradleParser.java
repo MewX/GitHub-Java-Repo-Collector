@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class GradleParser {
-    public void parseGradleFile(File file, Database db) {
+    public void parseGradleFile(File file, Database db, String projectName) {
         try {
+            boolean hasDependency = false;
+
             // read file
             List<String> lines = FileUtils.readLines(file, "UTF-8");
 
@@ -38,9 +40,10 @@ public class GradleParser {
 
                         String[] dependencyInfo = dependency[0].split(":");
 
-                        // TODO output results
                         if (dependencyInfo.length == 3) {
-                            saveDependency(dependencyInfo, db);
+                            hasDependency = true;
+
+                            saveDependency(dependencyInfo, db, projectName);
                         }
 
                         //move to next line
@@ -48,13 +51,17 @@ public class GradleParser {
                     }
                 }
             }
+
+            // no dependency found
+            if (!hasDependency) {
+                db.insert(projectName, "no dependency", "no dependency", "no dependency");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveDependency(String[] dependency, Database db) {
-        // TODO output results
+    private void saveDependency(String[] dependency, Database db, String projectName) {
 //        System.out.println("GroupId: " + dependencyInfo[0]);
 //        System.out.println("artifactId: " + dependencyInfo[1]);
 //        System.out.println("version: " + dependencyInfo[2]);
@@ -64,9 +71,8 @@ public class GradleParser {
         String artifactId = dependency[1];
         String version = dependency[2];
 
-        // TODO modify project name
-        if (!db.checkExistance("test-gradle", groupId, artifactId, version)) {
-            db.insert("test-gradle", groupId, artifactId, version);
+        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
+            db.insert(projectName, groupId, artifactId, version);
         }
     }
 }

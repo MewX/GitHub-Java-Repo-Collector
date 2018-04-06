@@ -46,7 +46,9 @@ public class PomParser {
 
             // no dependency found
             if (!hasDependency) {
-                db.insert(projectName, "no dependency", "no dependency", "no dependency");
+                if (!db.checkProjectExistance(projectName)) {
+                    db.insert(projectName, "no dependency", "no dependency", "no dependency");
+                }
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();

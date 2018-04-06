@@ -67,4 +67,20 @@ public class Database {
 
         return false;
     }
+
+    public boolean checkProjectExistance(String project) {
+        try {
+            String checkRecord = "SELECT count(*) FROM dependencies where project = ?;";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(checkRecord);
+
+            preparedStatement.setString(1, project);
+
+            return preparedStatement.executeQuery().getLong(1) != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

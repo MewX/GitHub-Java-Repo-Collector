@@ -54,7 +54,10 @@ public class GradleParser {
 
             // no dependency found
             if (!hasDependency) {
-                db.insert(projectName, "no dependency", "no dependency", "no dependency");
+                // check if project already exist
+                if (!db.checkProjectExistance(projectName)) {
+                    db.insert(projectName, "no dependency", "no dependency", "no dependency");
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

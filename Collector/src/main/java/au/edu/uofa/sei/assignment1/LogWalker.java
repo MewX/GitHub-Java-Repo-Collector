@@ -87,18 +87,19 @@ public class LogWalker {
 
     private static void loopThroughRepo(String repoName, CommitDb commitDb) throws IOException, GitAPIException, SQLException {
         final String treeNamePrefix = "refs/heads/";
+        final String gitPath = Constants.BASE_PATH + repoName + "/.git";
 
-        System.err.println("Working on " + Constants.BASE_PATH + repoName + "/.git");
+        System.err.println("Working on " + gitPath);
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         org.eclipse.jgit.lib.Repository repository = builder
-                .setGitDir(new File(Constants.BASE_PATH + repoName + "/.git"))
+                .setGitDir(new File(gitPath))
                 .readEnvironment() // scan environment GIT_* variables
                 .findGitDir() // scan up the file system tree
                 .build();
         Git git = new Git(repository);
 
         ArrayList<CommitDb.Commit> commits = new ArrayList<>();
-        for (RevCommit commit : git.log().add(repository.resolve(treeNamePrefix + repository.getFullBranch())).call()) {
+        for (RevCommit commit : git.log().all().call()) {
             System.out.println("    Found commit: " + commit.getName());
             final PersonIdent authorId = commit.getAuthorIdent();
             commits.add(new CommitDb.Commit(repoName, new Timestamp(authorId.getWhen().getTime()), commit.getName(), 0, authorId.getEmailAddress()));

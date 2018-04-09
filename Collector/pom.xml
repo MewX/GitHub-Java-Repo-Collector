@@ -31,7 +31,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>au.edu.uofa.sei.assignment1.Collector</mainClass>
+                            <!--<mainClass>au.edu.uofa.sei.assignment1.Collector</mainClass>-->
+                            <mainClass>au.edu.uofa.sei.assignment1.LogWalker</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

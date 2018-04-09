@@ -1,5 +1,6 @@
 package au.edu.uofa.sei.assignment1;
 
+import au.edu.uofa.sei.assignment1.db.Conn;
 import au.edu.uofa.sei.assignment1.db.QueryDb;
 import au.edu.uofa.sei.assignment1.type.Repository;
 import com.google.gson.Gson;
@@ -47,8 +48,10 @@ public class Collector {
         prop.setProperty("log4j.rootLogger", "INFO");
         PropertyConfigurator.configure(prop);
 
+        final Conn c = new Conn(Constants.DB_NAME);
+
         // init db
-        QueryDb db = new QueryDb("repo.db");
+        QueryDb db = new QueryDb(c);
 
         // collecting list (disabled when not required)
 //        Repository.collectingRepos(db);
@@ -70,16 +73,14 @@ public class Collector {
         }
 
         // clear temp folder, clone to temp folder first, them move to the real folder
-        final String TEMP_PATH = "temp/";
-        deleteFolder(new File(TEMP_PATH));
-        new File(TEMP_PATH).mkdirs();
+        deleteFolder(new File(Constants.TEMP_PATH));
+        new File(Constants.TEMP_PATH).mkdirs();
 
         // clone all
-        final String BASE_PATH = "java-repos/";
-        new File(BASE_PATH).mkdirs();
+        new File(Constants.BASE_PATH).mkdirs();
         for (int i = 0; i < repoNames.size(); i ++) {
-            String finalFolderName = BASE_PATH + repoNames.get(i);
-            String tempFolderName = TEMP_PATH + repoNames.get(i);
+            String finalFolderName = Constants.BASE_PATH + repoNames.get(i);
+            String tempFolderName = Constants.TEMP_PATH + repoNames.get(i);
             if (!new File(finalFolderName).exists()) {
                 // clone
                 System.err.format("(%d/%d) Cloning %s into %s...\n", i, repoNames.size(), repoNames.get(i), tempFolderName);
@@ -96,5 +97,6 @@ public class Collector {
             }
         }
 
+        c.close();
     }
 }

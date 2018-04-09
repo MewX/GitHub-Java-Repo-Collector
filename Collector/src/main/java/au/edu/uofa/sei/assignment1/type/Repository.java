@@ -32,7 +32,7 @@ public class Repository {
         }
         String url = "https://api.github.com/search/repositories?" + sb.toString() + Constants.APP_ID_FOR_QUERY;
 
-        if (queryDb.checkExistance(TYPE, sb.toString())) {
+        if (queryDb.checkExistence(TYPE, sb.toString())) {
             System.err.println("Found existing record, skipped: " + sb.toString());
             return prevReq;
         }

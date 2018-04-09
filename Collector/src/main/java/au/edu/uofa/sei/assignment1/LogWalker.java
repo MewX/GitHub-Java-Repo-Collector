@@ -86,7 +86,6 @@ public class LogWalker {
     }
 
     private static void loopThroughRepo(String repoName, CommitDb commitDb) throws IOException, GitAPIException, SQLException {
-        final String treeNamePrefix = "refs/heads/";
         final String gitPath = Constants.BASE_PATH + repoName + "/.git";
 
         System.err.println("Working on " + gitPath);

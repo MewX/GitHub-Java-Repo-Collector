@@ -23,7 +23,8 @@ public class Database {
                     "  commit_tag TEXT,\n" +
                     "  group_id TEXT NOT NULL,\n" +
                     "  artifact_id TEXT NOT NULL,\n" +
-                    "  version TEXT NOT NULL\n" +
+                    "  version TEXT NOT NULL,\n" +
+                    "  UNIQUE(project, commit_tag, group_id, artifact_id) ON CONFLICT REPLACE \n" +
                     ");";
 
             PreparedStatement preparedStatement = connection.prepareStatement(createTable);

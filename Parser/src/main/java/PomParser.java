@@ -74,8 +74,8 @@ public class PomParser {
         String artifactId = element.getElementsByTagName("artifactId").item(0).getTextContent();
         String version = element.getElementsByTagName("version").getLength() != 0 ? element.getElementsByTagName("version").item(0).getTextContent() : "default";
 
-        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
+//        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
             db.insert(projectName, commitTag, groupId, artifactId, version);
-        }
+//        }
     }
 }

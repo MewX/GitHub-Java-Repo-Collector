@@ -74,8 +74,8 @@ public class GradleParser {
         String artifactId = dependency[1];
         String version = dependency[2];
 
-        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
+//        if (!db.checkExistance(projectName, groupId, artifactId, version)) {
             db.insert(projectName, commitTag, groupId, artifactId, version);
-        }
+//        }
     }
 }

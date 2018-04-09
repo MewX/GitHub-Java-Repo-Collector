@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class Parser {
     public static void main(String[] args) {
-        if (args.length != 1) {
+        if (args.length != 3) {
             System.out.println("Please specify a folder path to the project!");
             return;
         }
@@ -15,6 +15,8 @@ public class Parser {
         // TODO modify file path
         // absolute path of project folder (root folder)
         File inputFile = new File(args[0]);
+        int projectVersion = Integer.parseInt(args[1]);
+        String projectTime = args[2];
 //        File inputFile = new File("/Users/nick/Documents/Github/MyAustralia2");
 
         // project name based on file path
@@ -43,9 +45,9 @@ public class Parser {
 
         for (File file : files) {
             if (file.getName().equals("pom.xml")) {
-                pomParser.parsePomFile(file, db, projectName);
+                pomParser.parsePomFile(file, db, projectName, projectVersion, projectTime);
             } else if (file.getName().equals("build.gradle")) {
-                gradleParser.parseGradleFile(file, db, projectName);
+                gradleParser.parseGradleFile(file, db, projectName, projectVersion, projectTime);
             }
         }
 

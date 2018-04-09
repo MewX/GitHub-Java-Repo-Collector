@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class GradleParser {
-    public void parseGradleFile(File file, Database db, String projectName) {
+    public void parseGradleFile(File file, Database db, String projectName, int projectVersion, String projectTime) {
         try {
             boolean hasDependency = false;
 
@@ -43,7 +43,7 @@ public class GradleParser {
                         if (dependencyInfo.length == 3) {
                             hasDependency = true;
 
-                            saveDependency(dependencyInfo, db, projectName);
+                            saveDependency(dependencyInfo, db, projectName, projectVersion, projectTime);
                         }
 
                         //move to next line
@@ -56,7 +56,7 @@ public class GradleParser {
             if (!hasDependency) {
                 // check if project already exist
                 if (!db.checkProjectExistance(projectName)) {
-                    db.insert(projectName, "no dependency", "no dependency", "no dependency");
+                    db.insert(projectName, 0, null,"no dependency", "no dependency", "no dependency");
                 }
             }
         } catch (IOException e) {
@@ -64,7 +64,7 @@ public class GradleParser {
         }
     }
 
-    private void saveDependency(String[] dependency, Database db, String projectName) {
+    private void saveDependency(String[] dependency, Database db, String projectName, int projectVersion, String projectTime) {
 //        System.out.println("GroupId: " + dependencyInfo[0]);
 //        System.out.println("artifactId: " + dependencyInfo[1]);
 //        System.out.println("version: " + dependencyInfo[2]);
@@ -75,7 +75,7 @@ public class GradleParser {
         String version = dependency[2];
 
         if (!db.checkExistance(projectName, groupId, artifactId, version)) {
-            db.insert(projectName, groupId, artifactId, version);
+            db.insert(projectName, projectVersion, projectTime, groupId, artifactId, version);
         }
     }
 }

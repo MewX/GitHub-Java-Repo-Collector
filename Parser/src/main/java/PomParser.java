@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class PomParser {
-    public void parsePomFile(File file, Database db, String projectName, int projectVersion, String projectTime) {
+    public void parsePomFile(File file, Database db, String projectName, String commitTag) {
         try {
             boolean hasDependency = false;
 
@@ -30,7 +30,7 @@ public class PomParser {
 
                 Element parent = (Element) parents.item(0);
 
-                saveDependency(parent, db, projectName, projectVersion, projectTime);
+                saveDependency(parent, db, projectName, commitTag);
             }
 
             // dependency tag
@@ -41,13 +41,13 @@ public class PomParser {
 
                 Element dependency = (Element) dependencies.item(i);
 
-                saveDependency(dependency, db, projectName, projectVersion, projectTime);
+                saveDependency(dependency, db, projectName, commitTag);
             }
 
             // no dependency found
             if (!hasDependency) {
                 if (!db.checkProjectExistance(projectName)) {
-                    db.insert(projectName, 0, null,"no dependency", "no dependency", "no dependency");
+                    db.insert(projectName, null,"no dependency", "no dependency", "no dependency");
                 }
             }
         } catch (ParserConfigurationException e) {
@@ -59,7 +59,7 @@ public class PomParser {
         }
     }
 
-    private void saveDependency(Element element, Database db, String projectName, int projectVersion, String projectTime) {
+    private void saveDependency(Element element, Database db, String projectName, String commitTag) {
 //                System.out.println("GroupId: " + element.getElementsByTagName("groupId").item(0).getTextContent());
 //                System.out.println("artifactId: " + element.getElementsByTagName("artifactId").item(0).getTextContent());
 //                if (element.getElementsByTagName("version").getLength() != 0) {
@@ -75,7 +75,7 @@ public class PomParser {
         String version = element.getElementsByTagName("version").getLength() != 0 ? element.getElementsByTagName("version").item(0).getTextContent() : "default";
 
         if (!db.checkExistance(projectName, groupId, artifactId, version)) {
-            db.insert(projectName, projectVersion, projectTime, groupId, artifactId, version);
+            db.insert(projectName, commitTag, groupId, artifactId, version);
         }
     }
 }

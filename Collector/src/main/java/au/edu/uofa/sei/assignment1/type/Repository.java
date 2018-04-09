@@ -2,7 +2,7 @@ package au.edu.uofa.sei.assignment1.type;
 
 import au.edu.uofa.sei.assignment1.Constants;
 import au.edu.uofa.sei.assignment1.LightNetwork;
-import au.edu.uofa.sei.assignment1.QueryDb;
+import au.edu.uofa.sei.assignment1.db.QueryDb;
 
 import java.sql.SQLException;
 import java.util.Map;

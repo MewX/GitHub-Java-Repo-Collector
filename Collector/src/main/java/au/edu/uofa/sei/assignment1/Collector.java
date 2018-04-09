@@ -1,5 +1,6 @@
 package au.edu.uofa.sei.assignment1;
 
+import au.edu.uofa.sei.assignment1.db.QueryDb;
 import au.edu.uofa.sei.assignment1.type.Repository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

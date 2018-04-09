@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -35,6 +36,10 @@ import java.util.*;
  */
 public class LogWalker {
     public static void main(String[] args) throws SQLException, IOException, GitAPIException {
+        Properties prop = new Properties();
+        prop.setProperty("log4j.rootLogger", "INFO");
+        PropertyConfigurator.configure(prop);
+
         Conn c = new Conn(Constants.DB_NAME);
         CommitDb commitDb = new CommitDb(c);
 
@@ -54,7 +59,7 @@ public class LogWalker {
         System.err.println("Cleaning record from project: " + repoNames.get(i));
         commitDb.cleanProject(repoNames.get(i));
         for (; i < repoNames.size(); i ++) {
-            System.err.println("Processing " + repoNames.get(i) + " ...");
+//            System.err.println("Processing " + repoNames.get(i) + " ...");
             loopThroughRepo(repoNames.get(i), commitDb);
         }
 
@@ -83,6 +88,7 @@ public class LogWalker {
     private static void loopThroughRepo(String repoName, CommitDb commitDb) throws IOException, GitAPIException, SQLException {
         final String treeName = "refs/heads/master";
 
+        System.err.println("Working on " + Constants.BASE_PATH + repoName + "/.git");
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         org.eclipse.jgit.lib.Repository repository = builder
                 .setGitDir(new File(Constants.BASE_PATH + repoName + "/.git"))

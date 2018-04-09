@@ -11,5 +11,5 @@ public class Constants {
 
     public static final String DB_NAME = "repo.db";
     public static final String TEMP_PATH = "temp/";
-    public static final String BASE_PATH = "java-repo/";
+    public static final String BASE_PATH = "java-repos/";
 }

@@ -10,19 +10,17 @@ import java.util.Collection;
 
 public class Parser {
     public static void main(String[] args) throws SQLException {
-        if (args.length != 2) {
-            System.out.println("Please specify a folder path to the project!");
+        if (args.length != 4) {
+            System.out.println("Usage: java -jar xxx.jar /path/to/repo commitTag dbName repoName");
             return;
         }
 
-        // TODO modify file path
         // absolute path of project folder (root folder)
-        File inputFile = new File(args[0]);
+        File repoPath = new File(args[0]);
         String commitTag = args[1];
+        String dbName = args[2]; // "dependencies.db"
+        String repoName = args[3];
 //        File inputFile = new File("/Users/nick/Documents/Github/MyAustralia2");
-
-        // project name based on file path
-        String projectName = inputFile.getName();
 
         // parser for pom.xml
         PomParser pomParser = new PomParser();
@@ -30,12 +28,12 @@ public class Parser {
         GradleParser gradleParser = new GradleParser();
 
         // store result to database
-        Database db = new Database("dependencies.db");
+        Database db = new Database(dbName);
 
-        System.out.println("Processing project: " + projectName);
+        System.out.println("Processing project: " + repoName);
 
         // get all "pom.xml" and "build.gradle" from sub-folder
-        Collection<File> files = FileUtils.listFiles(inputFile, new IOFileFilter() {
+        Collection<File> files = FileUtils.listFiles(repoPath, new IOFileFilter() {
             public boolean accept(File file) {
                 return !file.getName().contains(".git") &&
                         (file.getName().equals("pom.xml") || file.getName().equals("build.gradle"));
@@ -48,13 +46,13 @@ public class Parser {
 
         for (File file : files) {
             if (file.getName().equals("pom.xml")) {
-                pomParser.parsePomFile(file, db, projectName, commitTag);
+                pomParser.parsePomFile(file, db, repoName, commitTag);
             } else if (file.getName().equals("build.gradle")) {
-                gradleParser.parseGradleFile(file, db, projectName, commitTag);
+                gradleParser.parseGradleFile(file, db, repoName, commitTag);
             }
         }
 
-        System.out.println("Finish processing project: " + projectName);
+        System.out.println("Finish processing project: " + repoName);
         db.close();
     }
 }

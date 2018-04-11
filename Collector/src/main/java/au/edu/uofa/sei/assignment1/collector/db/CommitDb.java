@@ -1,6 +1,8 @@
 package au.edu.uofa.sei.assignment1.collector.db;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommitDb {
     public static class Commit {
@@ -57,6 +59,20 @@ public class CommitDb {
         PreparedStatement select = conn.getConn().prepareStatement(SELECT);
         select.setString(1, project);
         return select.executeQuery();
+    }
+
+    public List<Commit> resultToCommit(ResultSet resultSet) throws SQLException {
+        List<Commit> list = new ArrayList<>();
+        while (resultSet.next()) {
+            list.add(new Commit(
+                    resultSet.getString("project"),
+                    resultSet.getTimestamp("time"),
+                    resultSet.getString("message"),
+                    (int) resultSet.getLong("commit_id"),
+                    resultSet.getString("author")
+            ));
+        }
+        return list;
     }
 
     public boolean checkExistance(String project) throws SQLException {

@@ -1,4 +1,4 @@
-package au.edu.uofa.sei.assignment1.db;
+package au.edu.uofa.sei.assignment1.collector.db;
 
 import java.sql.*;
 

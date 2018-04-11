@@ -1,8 +1,8 @@
-package au.edu.uofa.sei.assignment1.type;
+package au.edu.uofa.sei.assignment1.collector.type;
 
-import au.edu.uofa.sei.assignment1.Constants;
-import au.edu.uofa.sei.assignment1.LightNetwork;
-import au.edu.uofa.sei.assignment1.db.QueryDb;
+import au.edu.uofa.sei.assignment1.collector.Constants;
+import au.edu.uofa.sei.assignment1.collector.LightNetwork;
+import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class Repository {
     public static String TYPE = Repository.class.getName();
 
-    //"https://api.github.com/search/repositories?q=language:java&sort=stars&order=desc" + au.edu.uofa.sei.assignment1.Constants.APP_ID_FOR_QUERY);
+    //"https://api.github.com/search/repositories?q=language:java&sort=stars&order=desc" + au.edu.uofa.sei.assignment1.collector.Constants.APP_ID_FOR_QUERY);
     private static String constructQuerySection(int maxStarWanted) {
         return "language:java" + (maxStarWanted > 0 ? "+stars:<" + maxStarWanted : "");
     }

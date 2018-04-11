@@ -1,3 +1,5 @@
+package au.edu.adelaide.edu.sei.assignment1.parser;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -86,5 +88,10 @@ public class Database {
         }
 
         return false;
+    }
+
+    public void close() throws SQLException {
+        if (connection != null)
+            connection.close();
     }
 }

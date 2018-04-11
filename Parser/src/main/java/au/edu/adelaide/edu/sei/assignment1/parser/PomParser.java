@@ -1,3 +1,5 @@
+package au.edu.adelaide.edu.sei.assignment1.parser;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

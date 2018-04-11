@@ -1,4 +1,4 @@
-package au.edu.uofa.sei.assignment1;
+package au.edu.uofa.sei.assignment1.collector;
 
 public class Constants {
     public static final String HEADER_X_RATELIMIT_LIMIT = "X-RateLimit-Limit"; // 5000

@@ -1,9 +1,9 @@
-package au.edu.uofa.sei.assignment1;
+package au.edu.uofa.sei.assignment1.collector;
 
-import au.edu.uofa.sei.assignment1.db.CommitDb;
-import au.edu.uofa.sei.assignment1.db.Conn;
-import au.edu.uofa.sei.assignment1.db.QueryDb;
-import au.edu.uofa.sei.assignment1.type.Repository;
+import au.edu.uofa.sei.assignment1.collector.db.CommitDb;
+import au.edu.uofa.sei.assignment1.collector.db.Conn;
+import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
+import au.edu.uofa.sei.assignment1.collector.type.Repository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -66,7 +66,7 @@ public class LogWalker {
         c.close();
     }
 
-    private static ArrayList<String> getRepos(Conn conn) throws SQLException {
+    static ArrayList<String> getRepos(Conn conn) throws SQLException {
         QueryDb queryDb = new QueryDb(conn);
 
         ArrayList<String> repoNames = new ArrayList<>();
@@ -85,17 +85,20 @@ public class LogWalker {
         return repoNames;
     }
 
-    private static void loopThroughRepo(String repoName, CommitDb commitDb) throws IOException, GitAPIException, SQLException {
-        final String gitPath = Constants.BASE_PATH + repoName + "/.git";
-
-        System.err.println("Working on " + gitPath);
+    static Git openExistingRepo(String pathToDotGit) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         org.eclipse.jgit.lib.Repository repository = builder
-                .setGitDir(new File(gitPath))
+                .setGitDir(new File(pathToDotGit))
                 .readEnvironment() // scan environment GIT_* variables
                 .findGitDir() // scan up the file system tree
                 .build();
-        Git git = new Git(repository);
+        return new Git(repository);
+    }
+
+    private static void loopThroughRepo(String repoName, CommitDb commitDb) throws IOException, GitAPIException, SQLException {
+        final String gitPath = Constants.BASE_PATH + repoName + "/.git";
+        System.err.println("Working on " + gitPath);
+        Git git = openExistingRepo(gitPath);
 
         ArrayList<CommitDb.Commit> commits = new ArrayList<>();
         for (RevCommit commit : git.log().all().call()) {

@@ -1,8 +1,8 @@
-package au.edu.uofa.sei.assignment1;
+package au.edu.uofa.sei.assignment1.collector;
 
-import au.edu.uofa.sei.assignment1.db.Conn;
-import au.edu.uofa.sei.assignment1.db.QueryDb;
-import au.edu.uofa.sei.assignment1.type.Repository;
+import au.edu.uofa.sei.assignment1.collector.db.Conn;
+import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
+import au.edu.uofa.sei.assignment1.collector.type.Repository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;

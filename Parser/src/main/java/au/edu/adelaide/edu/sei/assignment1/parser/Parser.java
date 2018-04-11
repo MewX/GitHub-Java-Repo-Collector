@@ -1,12 +1,15 @@
+package au.edu.adelaide.edu.sei.assignment1.parser;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Collection;
 
 public class Parser {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         if (args.length != 2) {
             System.out.println("Please specify a folder path to the project!");
             return;
@@ -34,7 +37,8 @@ public class Parser {
         // get all "pom.xml" and "build.gradle" from sub-folder
         Collection<File> files = FileUtils.listFiles(inputFile, new IOFileFilter() {
             public boolean accept(File file) {
-                return file.getName().equals("pom.xml") || file.getName().equals("build.gradle");
+                return !file.getName().contains(".git") &&
+                        (file.getName().equals("pom.xml") || file.getName().equals("build.gradle"));
             }
 
             public boolean accept(File file, String s) {
@@ -51,5 +55,6 @@ public class Parser {
         }
 
         System.out.println("Finish processing project: " + projectName);
+        db.close();
     }
 }

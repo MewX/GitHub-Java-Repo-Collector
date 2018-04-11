@@ -1,4 +1,4 @@
-package au.edu.uofa.sei.assignment1;
+package au.edu.uofa.sei.assignment1.collector;
 
 import java.io.*;
 import java.net.*;

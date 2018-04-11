@@ -75,14 +75,14 @@ public class CommitStatist {
 
             Calendar baseCalendar = Calendar.getInstance();
             baseCalendar.setTimeInMillis(commits.get(0).time.getTime());
-            baseCalendar.set(Calendar.HOUR, 0); // initialized as 0
+            baseCalendar.set(Calendar.AM_PM, Calendar.AM); // initialized as 0
+            baseCalendar.set(Calendar.HOUR, 0);
             baseCalendar.set(Calendar.MINUTE, 0);
             baseCalendar.set(Calendar.SECOND, 0);
             System.err.println("    First week time is selected: " + DATE_FORMAT.format(baseCalendar.getTime()));
 
-            // pick date every
-            int idxCommit = 0;
-            while (idxCommit < commits.size()) {
+            // pick date every week
+            for (int idxCommit = 0; idxCommit < commits.size(); idxCommit++) {
                 final CommitDb.Commit commit = commits.get(idxCommit);
                 final Date date = new Date(commit.time.getTime());
 
@@ -104,9 +104,10 @@ public class CommitStatist {
                                 dependencyDbName,
                                 projectName
                         });
+                    } else {
+                        idxCommit --;
                     }
                 }
-                idxCommit++;
             }
         }
 

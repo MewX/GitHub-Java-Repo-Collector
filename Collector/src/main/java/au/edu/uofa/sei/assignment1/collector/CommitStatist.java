@@ -25,18 +25,25 @@ public class CommitStatist {
 
         // test jgit switching branch
         if (args.length == 2 || args.length == 3) {
-            if (args[0].equals("d")) {
-                // e.g. java -jar xxx.jar d path/to/.git 9f43ab...
-                System.err.format("detaching to %s from %s\n", args[1], args[2]);
-                detachBranch(args[1], args[2]);
-            } else if (args[0].equals("c")) {
-                // e.g. java -jar xxx.jar c path/to/.git
-                System.err.format("reattaching head: %s\n", args[1]);
-                reattachMasterBranch(args[1]);
-            } else if (args[0].equals("r")) {
-                // e.g. java -jar xxx.jar r noOfGroups groupId(0-noOfGroups)
-                noOfGroups = Integer.valueOf(args[1]);
-                groupId = Integer.valueOf(args[2]);
+            switch (args[0]) {
+                case "d":
+                    // e.g. java -jar xxx.jar d path/to/.git 9f43ab...
+                    System.err.format("detaching to %s from %s\n", args[1], args[2]);
+                    detachBranch(args[1], args[2]);
+                    break;
+                case "c":
+                    // e.g. java -jar xxx.jar c path/to/.git
+                    System.err.format("reattaching head: %s\n", args[1]);
+                    reattachMasterBranch(args[1]);
+                    break;
+                case "r":
+                    // e.g. java -jar xxx.jar r noOfGroups groupId(0-noOfGroups)
+                    noOfGroups = Integer.valueOf(args[1]);
+                    groupId = Integer.valueOf(args[2]);
+                    break;
+                default:
+                    System.err.println("usage: java -jar xxx.jar r noOfGroups groupId(0-noOfGroups)");
+                    return;
             }
         }
 

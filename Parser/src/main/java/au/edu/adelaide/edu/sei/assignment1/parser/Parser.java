@@ -46,8 +46,10 @@ public class Parser {
 
         for (File file : files) {
             if (file.getName().equals("pom.xml")) {
+                System.out.println("Found maven project.");
                 pomParser.parsePomFile(file, db, repoName, commitTag);
             } else if (file.getName().equals("build.gradle")) {
+                System.out.println("Found gradle project.");
                 gradleParser.parseGradleFile(file, db, repoName, commitTag);
             }
         }

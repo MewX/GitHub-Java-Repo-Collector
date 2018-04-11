@@ -62,7 +62,7 @@ public class CommitStatist {
         // select
         final String dependencyDbName = "dep" + (groupId + 1) + "of" + noOfGroups + ".db";
         final int sizeOfEachGroup = repoNames.size() / noOfGroups;
-        final int UPPER_LIMIT = Math.max(sizeOfEachGroup * (groupId + 1), repoNames.size());
+        final int UPPER_LIMIT = groupId + 1 != noOfGroups ? (sizeOfEachGroup * (groupId + 1)) : repoNames.size();
         System.err.format("Repos: %d/%d out of %d\n", groupId * sizeOfEachGroup, UPPER_LIMIT, repoNames.size());
         for (int i = sizeOfEachGroup * groupId; i < UPPER_LIMIT; i++) {
             final String projectName = repoNames.get(i);

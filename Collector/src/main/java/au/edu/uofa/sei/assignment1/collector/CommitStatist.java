@@ -10,11 +10,13 @@ import org.eclipse.jgit.lib.Ref;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class CommitStatist {
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
     public static void main(String[] args) throws SQLException, IOException, GitAPIException {
         Properties prop = new Properties();
         prop.setProperty("log4j.rootLogger", "INFO");
@@ -67,22 +69,44 @@ public class CommitStatist {
         for (int i = sizeOfEachGroup * groupId; i < UPPER_LIMIT; i++) {
             final String projectName = repoNames.get(i);
             System.err.println("Working on repo: " + projectName);
-            List<CommitDb.Commit> commits = commitDb.resultToCommit(commitDb.select(projectName));
-//            commits.sort(Comparator.comparing(a -> a.commitId)); // not necessary
+            List<CommitDb.Commit> commits = commitDb.resultToCommit(commitDb.select(projectName)); // sorted by date
             final String pathToRepo = Constants.BASE_PATH + projectName;
             final String pathToDotGit = pathToRepo + "/.git";
-            for (CommitDb.Commit commit : commits) {
-                System.err.println("    Calc commit: " + commit.msg);
-                reattachMasterBranch(pathToDotGit);
-                detachBranch(pathToDotGit, commit.msg);
 
-                // run dependency walker
-                Parser.main(new String[] {
-                        pathToRepo,
-                        commit.msg,
-                        dependencyDbName,
-                        projectName
-                });
+            Calendar baseCalendar = Calendar.getInstance();
+            baseCalendar.setTimeInMillis(commits.get(0).time.getTime());
+            baseCalendar.set(Calendar.HOUR, 0); // initialized as 0
+            baseCalendar.set(Calendar.MINUTE, 0);
+            baseCalendar.set(Calendar.SECOND, 0);
+            System.err.println("    First week time is selected: " + DATE_FORMAT.format(baseCalendar.getTime()));
+
+            // pick date every
+            int idxCommit = 0;
+            while (idxCommit < commits.size()) {
+                final CommitDb.Commit commit = commits.get(idxCommit);
+                final Date date = new Date(commit.time.getTime());
+
+                if (!baseCalendar.after(date)) {
+                    // commit date is equal to or after base date
+                    baseCalendar.add(Calendar.DATE, 7); // add one week
+                    if (baseCalendar.after(date)) {
+                        // good, this is what I want, and I will use this commit
+                        System.err.println("    Selected commit: " + commit.msg + " - " + DATE_FORMAT.format(date));
+
+                        // reset to master branch before detach the master branch into a specific commit hash
+                        reattachMasterBranch(pathToDotGit);
+                        detachBranch(pathToDotGit, commit.msg);
+
+                        // run dependency walker
+                        Parser.main(new String[]{
+                                pathToRepo,
+                                commit.msg,
+                                dependencyDbName,
+                                projectName
+                        });
+                    }
+                }
+                idxCommit++;
             }
         }
 

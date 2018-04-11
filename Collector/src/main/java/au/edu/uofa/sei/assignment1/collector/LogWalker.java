@@ -81,6 +81,7 @@ public class LogWalker {
                 JsonObject repo = ele.getAsJsonObject();
                 repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
             }
+            System.err.println("Accumulated noOfRepo is " + repoNames.size());
         }
         return repoNames;
     }

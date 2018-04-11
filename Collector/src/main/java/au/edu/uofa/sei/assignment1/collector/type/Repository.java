@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Repository {
-    public static String TYPE = Repository.class.getName();
+    public static String TYPE = Repository.class.getSimpleName();
 
     //"https://api.github.com/search/repositories?q=language:java&sort=stars&order=desc" + au.edu.uofa.sei.assignment1.collector.Constants.APP_ID_FOR_QUERY);
     private static String constructQuerySection(int maxStarWanted) {

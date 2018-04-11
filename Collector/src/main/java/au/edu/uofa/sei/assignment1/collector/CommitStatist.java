@@ -85,6 +85,8 @@ public class CommitStatist {
                 });
             }
         }
+
+        c.close();
     }
 
     private static void detachBranch(String pathToDotGit, String hash) throws IOException, GitAPIException {

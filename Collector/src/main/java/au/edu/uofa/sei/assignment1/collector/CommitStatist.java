@@ -65,7 +65,7 @@ public class CommitStatist {
         final String dependencyDbName = "dep" + (groupId + 1) + "of" + noOfGroups + ".db";
         final int sizeOfEachGroup = repoNames.size() / noOfGroups;
         final int UPPER_LIMIT = groupId + 1 != noOfGroups ? (sizeOfEachGroup * (groupId + 1)) : repoNames.size();
-        System.err.format("Repos: %d/%d out of %d\n", groupId * sizeOfEachGroup, UPPER_LIMIT, repoNames.size());
+        System.err.format("Repos: %d/%d out of %d\n", groupId * sizeOfEachGroup + 1, UPPER_LIMIT, repoNames.size());
         for (int i = sizeOfEachGroup * groupId; i < UPPER_LIMIT; i++) {
             final String projectName = repoNames.get(i);
             System.err.println("Working on repo: " + projectName);
@@ -74,6 +74,7 @@ public class CommitStatist {
             final String pathToDotGit = pathToRepo + "/.git";
 
             Calendar baseCalendar = Calendar.getInstance();
+            Calendar tempCalendar = Calendar.getInstance();
             baseCalendar.setTimeInMillis(commits.get(0).time.getTime());
             baseCalendar.set(Calendar.AM_PM, Calendar.AM); // initialized as 0
             baseCalendar.set(Calendar.HOUR, 0);
@@ -85,11 +86,12 @@ public class CommitStatist {
             for (int idxCommit = 0; idxCommit < commits.size(); idxCommit++) {
                 final CommitDb.Commit commit = commits.get(idxCommit);
                 final Date date = new Date(commit.time.getTime());
+                tempCalendar.setTime(date);
 
-                if (!baseCalendar.after(date)) {
+                if (!baseCalendar.after(tempCalendar)) {
                     // commit date is equal to or after base date
                     baseCalendar.add(Calendar.DATE, 7); // add one week
-                    if (baseCalendar.after(date)) {
+                    if (baseCalendar.after(tempCalendar)) {
                         // good, this is what I want, and I will use this commit
                         System.err.println("    Selected commit: " + commit.msg + " - " + DATE_FORMAT.format(date));
 
@@ -108,6 +110,7 @@ public class CommitStatist {
                         idxCommit --;
                     }
                 }
+                System.err.println("    After commit: " + commit.msg + " - " + DATE_FORMAT.format(date));
             }
         }
 

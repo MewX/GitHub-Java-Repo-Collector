@@ -13,6 +13,14 @@
     <artifactId>Analyser</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>au.edu.adelaide.sei.assignment1</groupId>
+            <artifactId>Collector</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

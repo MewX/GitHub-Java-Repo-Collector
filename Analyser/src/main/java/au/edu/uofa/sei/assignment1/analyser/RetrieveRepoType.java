@@ -23,7 +23,7 @@ public class RetrieveRepoType {
 
         // get all list from database
         ArrayList<String> repoNames = new ArrayList<>();
-        ArrayList<Integer> repoTypes = new ArrayList<>();
+        ArrayList<String> repoTypes = new ArrayList<>();
         ResultSet rs = queryDb.select("au.edu.uofa.sei.assignment1.type.Repository");
         while (rs.next()) {
             String json = rs.getString("content");
@@ -34,14 +34,9 @@ public class RetrieveRepoType {
             for (JsonElement ele : obj.getAsJsonArray("items")) {
                 JsonObject repo = ele.getAsJsonObject();
                 repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
-                JsonObject owner = repo.getAsJsonObject("owner");
-                String typeString = owner.getAsJsonPrimitive("type").getAsString();
 
-                if (typeString.equals("Organization")) {
-                    repoTypes.add(1);
-                } else if (typeString.equals("User")) {
-                    repoTypes.add(0);
-                }
+                JsonObject owner = repo.getAsJsonObject("owner");
+                repoTypes.add(owner.getAsJsonPrimitive("type").getAsString());
             }
         }
 

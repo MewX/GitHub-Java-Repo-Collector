@@ -1,12 +1,23 @@
 package au.edu.adelaide.edu.sei.assignment1.parser;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database {
     private Connection connection = null;
+
+    public static class Dependency {
+        public String project, commitTag, groupId, artifactid, version;
+
+        public Dependency(String project, String commitTag, String groupId, String artifactId, String version) {
+            this.project = project;
+            this.commitTag = commitTag;
+            this.groupId = groupId;
+            this.artifactid = artifactId;
+            this.version = version;
+        }
+    }
 
     public Database(String filename) {
         connect(filename);
@@ -54,9 +65,39 @@ public class Database {
         }
     }
 
+    public List<String> selectProjectNames() throws SQLException {
+        final String SELECT = "SELECT DISTINCT project FROM dependencies ORDER BY id;";
+        PreparedStatement select = connection.prepareStatement(SELECT);
+        ResultSet resultSet = select.executeQuery();
+
+        List<String> list = new ArrayList<>();
+        while (resultSet.next()) {
+            list.add(resultSet.getString("project"));
+        }
+        return list;
+    }
+
+    public List<Dependency> selectDependencies(String projectName) throws SQLException {
+        final String SELECT = "SELECT * FROM dependencies WHERE project = ? ORDER BY id;";
+        PreparedStatement select = connection.prepareStatement(SELECT);
+        select.setString(1, projectName);
+        ResultSet resultSet = select.executeQuery();
+
+        List<Dependency> dependencies = new ArrayList<>();
+        while (resultSet.next()) {
+            dependencies.add(new Dependency(
+                    resultSet.getString("project"),
+                    resultSet.getString("commit_tag"),
+                    resultSet.getString("group_id"),
+                    resultSet.getString("artifact_id"),
+                    resultSet.getString("version")
+            ));
+        }
+        return dependencies;
+    }
+
     public boolean checkExistance(String project, String groupId, String artifactId, String version) {
         try {
-//            String checkRecord = "SELECT count(*) FROM dependencies where project = ? and group_id = ? and artifact_id = ? and version = ?;";
             String checkRecord = "SELECT count(*) FROM dependencies where project = ? and group_id = ? and artifact_id = ?;";
 
             PreparedStatement preparedStatement = connection.prepareStatement(checkRecord);

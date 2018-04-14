@@ -52,7 +52,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>au.edu.adelaide.edu.sei.assignment1.parser.Parser</mainClass>
+                            <!--<mainClass>au.edu.adelaide.edu.sei.assignment1.parser.Parser</mainClass>-->
+                            <mainClass>au.edu.adelaide.edu.sei.assignment1.parser.DependencyDatabaseMerger</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

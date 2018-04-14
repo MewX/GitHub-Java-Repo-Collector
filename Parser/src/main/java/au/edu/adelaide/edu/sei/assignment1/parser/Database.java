@@ -66,7 +66,6 @@ public class Database {
             preparedStatement.setString(5, version);
 
             preparedStatement.execute();
-            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -112,7 +111,6 @@ public class Database {
             preparedStatement.setString(1, project);
             preparedStatement.setString(2, groupId);
             preparedStatement.setString(3, artifactId);
-//            preparedStatement.setString(4, version);
 
             return preparedStatement.executeQuery().getLong(1) != 0;
         } catch (SQLException e) {
@@ -139,7 +137,9 @@ public class Database {
     }
 
     public void close() throws SQLException {
-        if (connection != null)
+        if (connection != null) {
+            connection.commit();
             connection.close();
+        }
     }
 }

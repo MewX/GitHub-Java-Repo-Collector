@@ -5,9 +5,11 @@ import au.edu.uofa.sei.assignment1.collector.db.CommitDb;
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -73,6 +75,27 @@ public class CommitStatist {
             final String pathToRepo = Constants.BASE_PATH + projectName;
             final String pathToDotGit = pathToRepo + "/.git";
 
+            // reset the repo to initial state
+            new File(pathToDotGit + "/index.lock").delete();
+            Git git = LogWalker.openExistingRepo(pathToDotGit);
+            git.clean().setCleanDirectories(true).setDryRun(true).setForce(true).call();
+            sleep(1);
+            // reset hard
+            git.reset().setMode(ResetCommand.ResetType.HARD).call();
+            sleep(1);
+            git.close();
+            // switch master branch
+            reattachMasterBranch(pathToDotGit);
+            // master branch clean
+            git = LogWalker.openExistingRepo(pathToDotGit);
+            git.clean().setCleanDirectories(true).setDryRun(true).setForce(true).call();
+            sleep(1);
+            // reset hard
+            git.reset().setMode(ResetCommand.ResetType.HARD).call();
+            sleep(1);
+            git.close();
+
+            // set date ranges
             Calendar baseCalendar = Calendar.getInstance();
             Calendar tempCalendar = Calendar.getInstance();
             baseCalendar.setTimeInMillis(commits.get(0).time.getTime());
@@ -90,7 +113,7 @@ public class CommitStatist {
 
                 if (!baseCalendar.after(tempCalendar)) {
                     // commit date is equal to or after base date
-                    baseCalendar.add(Calendar.DATE, 7); // add one week
+                    baseCalendar.add(Calendar.DATE, 4 * 7); // add 4 weeks
                     if (baseCalendar.after(tempCalendar)) {
                         // good, this is what I want, and I will use this commit
                         System.err.println("    Selected commit: " + commit.msg + " - " + DATE_FORMAT.format(date));
@@ -124,6 +147,7 @@ public class CommitStatist {
                 .setName(hash)
                 .call();
         git.close();
+        sleep(1);
     }
 
     private static void reattachMasterBranch(String pathToDotGit) throws IOException, GitAPIException {
@@ -141,6 +165,15 @@ public class CommitStatist {
                 .setName(branchName) // use the first default branch name
                 .call();
         git.close();
+        sleep(1);
+    }
+
+    public static void sleep(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

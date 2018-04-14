@@ -20,10 +20,15 @@ public class Database {
     }
 
     public Database(String filename) {
-        connect(filename);
+        this(filename, true);
     }
 
-    private void connect(String filename) {
+    public Database(String filename, boolean checkUnique) {
+        connect(filename, checkUnique);
+    }
+
+
+    private void connect(String filename, boolean checkUnique) {
         try {
             String url = "jdbc:sqlite:" + filename;
 
@@ -36,8 +41,8 @@ public class Database {
                     "  commit_tag TEXT,\n" +
                     "  group_id TEXT NOT NULL,\n" +
                     "  artifact_id TEXT NOT NULL,\n" +
-                    "  version TEXT NOT NULL,\n" +
-                    "  UNIQUE(project, commit_tag, group_id, artifact_id) ON CONFLICT REPLACE \n" +
+                    "  version TEXT NOT NULL" +
+                    (checkUnique ? ",\n  UNIQUE(project, commit_tag, group_id, artifact_id) ON CONFLICT REPLACE \n" : "") +
                     ");";
 
             PreparedStatement preparedStatement = connection.prepareStatement(createTable);

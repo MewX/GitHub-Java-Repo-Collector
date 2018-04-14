@@ -14,7 +14,7 @@ public class DependencyDatabaseMerger {
         final String TARGET_DB_NAME = args[1];
         final boolean IGNORE_LAST_ONE = args.length >= 3 && args[2].equalsIgnoreCase("true");
 
-        Database db = new Database(TARGET_DB_NAME);
+        Database db = new Database(TARGET_DB_NAME, false);
         for (int fragmentId = 1; fragmentId <= TOTAL_NUMBER; fragmentId ++) {
             final String dependencyDbName = "dep" + fragmentId + "of" + TOTAL_NUMBER + ".db";
             System.err.println("Proceeding " + dependencyDbName);

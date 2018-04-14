@@ -54,7 +54,7 @@ public class Database {
 
     public void insert(String project, String commitTag, String groupId, String artifactId, String version) {
         try {
-            String insertRecord = "INSERT INTO dependencies (project, commit_tag, group_id, artifact_id, version) VALUES (?, ?, ?, ?, ?);";
+            String insertRecord = "BEGIN TRANSACTION; INSERT INTO dependencies (project, commit_tag, group_id, artifact_id, version) VALUES (?, ?, ?, ?, ?); COMMIT;";
 
             PreparedStatement preparedStatement = connection.prepareStatement(insertRecord);
 

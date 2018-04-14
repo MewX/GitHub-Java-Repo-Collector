@@ -33,6 +33,7 @@ public class Database {
             String url = "jdbc:sqlite:" + filename;
 
             connection = DriverManager.getConnection(url);
+            connection.setAutoCommit(false);
 
             // SQL statement for creating a new table
             String createTable = "CREATE TABLE IF NOT EXISTS dependencies (\n" +
@@ -54,7 +55,7 @@ public class Database {
 
     public void insert(String project, String commitTag, String groupId, String artifactId, String version) {
         try {
-            String insertRecord = "BEGIN TRANSACTION; INSERT INTO dependencies (project, commit_tag, group_id, artifact_id, version) VALUES (?, ?, ?, ?, ?); COMMIT;";
+            String insertRecord = "INSERT INTO dependencies (project, commit_tag, group_id, artifact_id, version) VALUES (?, ?, ?, ?, ?);";
 
             PreparedStatement preparedStatement = connection.prepareStatement(insertRecord);
 
@@ -65,6 +66,7 @@ public class Database {
             preparedStatement.setString(5, version);
 
             preparedStatement.execute();
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }

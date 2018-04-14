@@ -21,7 +21,7 @@ public class DependencyDatabaseMerger {
 
             Database temp = new Database(dependencyDbName);
             List<String> projectNames = temp.selectProjectNames();
-            if (IGNORE_LAST_ONE) projectNames.remove(projectNames.size() - 1); // remove last one
+            if (IGNORE_LAST_ONE && projectNames.size() > 0) projectNames.remove(Math.max(projectNames.size() - 1, 0)); // remove last one
 
             for (String name : projectNames) {
                 List<Database.Dependency> dependencies = temp.selectDependencies(name);

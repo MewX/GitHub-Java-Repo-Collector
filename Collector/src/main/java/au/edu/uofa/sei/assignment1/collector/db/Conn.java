@@ -19,6 +19,9 @@ public class Conn {
     }
 
     public void close() throws SQLException {
-        if (conn != null) conn.close();
+        if (conn != null) {
+            conn.commit();
+            conn.close();
+        }
     }
 }

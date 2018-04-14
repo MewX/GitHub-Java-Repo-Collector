@@ -59,6 +59,7 @@ public class CommitStatist {
 
         Conn c = new Conn(Constants.DB_NAME);
         CommitDb commitDb = new CommitDb(c);
+        c.getConn().setAutoCommit(false);
 
         // get all list from database
         ArrayList<String> repoNames = LogWalker.getRepos(c); // the order does not change
@@ -135,6 +136,9 @@ public class CommitStatist {
                 }
                 System.err.println("    After commit: " + commit.msg + " - " + DATE_FORMAT.format(date));
             }
+
+            // after finishing each repo, commit once
+            c.getConn().commit();
         }
 
         c.close();

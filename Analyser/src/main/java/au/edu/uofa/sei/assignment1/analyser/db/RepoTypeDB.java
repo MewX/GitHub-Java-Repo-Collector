@@ -1,4 +1,4 @@
-package au.edu.uofa.sei.assignment1.analyser;
+package au.edu.uofa.sei.assignment1.analyser.db;
 
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
 

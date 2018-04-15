@@ -1,5 +1,6 @@
 package au.edu.uofa.sei.assignment1.analyser;
 
+import au.edu.uofa.sei.assignment1.analyser.db.RepoTypeDB;
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
 import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 import com.google.gson.Gson;

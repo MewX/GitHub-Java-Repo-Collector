@@ -8,55 +8,6 @@ from dependencies
   on dependencies.project = r.project
 group by r.repo_type;
 
-select message, project, strftime('%Y-%m-%d', datetime(time / 1000, 'unixepoch')) as time_stamp from commits  where date(time_stamp) between date('1997-01-01') and date('1997-12-31') order by time_stamp;
-
--- count number of projects based on year
-select count(distinct project) as project_num, time_stamp from
-  (select
-  project,
-  commit_tag
-  from dependencies) as d
-inner join (
-      select message, strftime('%Y', datetime(time / 1000, 'unixepoch')) as time_stamp
-      from commits
-      where date(time_stamp) between date('1997') and date('2017')
-      ) as c
-on d.commit_tag = c.message
-group by time_stamp;
-
--- count average number of library use based on year
-select commit_time, avg(total) as average from
-  (select
-  project,
-  commit_time,
-  repo_type,
-  avg(total) as total
-from (select
-        d.project,
-        commit_time,
-        r.repo_type,
-        count(*) as total
-      from (
-          (select
-             project,
-             commit_tag
-           from dependencies) as d
-          inner join
-          (select
-             message,
-             strftime('%Y-%m-%d', datetime(time / 1000, 'unixepoch')) as commit_time
-           from commits
-           where date(commit_time) between date('2017-01-01') and date('2017-03-31')) as commits
-            on commit_tag = commits.message)
-        inner join
-        (select
-           project,
-           repo_type
-         from repo_type) as r
-          on d.project = r.project
-      group by commit_tag)
-group by project);
-
 -- count number of projects based on year
 select distinct d.project, time_stamp, repo_type from
   (select
@@ -64,11 +15,11 @@ select distinct d.project, time_stamp, repo_type from
   commit_tag
   from dependencies) as d
 inner join (
-      select message, strftime('%Y', datetime(time / 1000, 'unixepoch')) as time_stamp
+      select project, message, strftime('%Y', datetime(time / 1000, 'unixepoch')) as time_stamp
       from commits
       where date(time_stamp) between date('2001') and date('2001')
       ) as c
-on d.commit_tag = c.message
+on d.commit_tag = c.message and d.project = c.project
   inner join repo_type
   on d.project = repo_type.project;
 
@@ -90,11 +41,12 @@ from (select
            from dependencies) as d
           inner join
           (select
+             project,
              message,
              strftime('%Y', datetime(time / 1000, 'unixepoch')) as commit_time
            from commits
-           where date(commit_time) = date('2015')) as commits
-            on commit_tag = commits.message)
+           where date(commit_time) = date('2012')) as commits
+            on commit_tag = commits.message and d.project = commits.project)
         inner join
         (select
            project,

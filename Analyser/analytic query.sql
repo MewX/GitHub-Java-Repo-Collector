@@ -113,7 +113,7 @@ from (select
              strftime('%Y-%m-%d', datetime(time / 1000, 'unixepoch')) as commit_time
            from commits
            where date(commit_time) between date('2016-01-01') and date('2016-03-31')) as commits
-            on commit_tag = commits.message)
+            on commit_tag = commits.message and d.project = commits.project)
         inner join
         (select
            project,

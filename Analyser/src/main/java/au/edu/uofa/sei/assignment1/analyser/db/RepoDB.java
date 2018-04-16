@@ -76,7 +76,7 @@ public class RepoDB {
                 "        (select " +
                 "           project, " +
                 "           repo_type " +
-                "         from repo_type where repo_type = ?) as r " +
+                "         from repo_type) as r " +
                 "          on d.project = r.project " +
                 "      group by commit_tag) " +
                 "group by project);";
@@ -84,7 +84,7 @@ public class RepoDB {
         PreparedStatement select = conn.getConn().prepareStatement(SELECT);
         select.setString(1, start);
         select.setString(2, end);
-        select.setString(3, type);
+//        select.setString(3, type);
         return select.executeQuery();
     }
 }

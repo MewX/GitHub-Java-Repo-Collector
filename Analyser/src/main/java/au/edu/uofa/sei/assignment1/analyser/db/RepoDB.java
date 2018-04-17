@@ -87,4 +87,42 @@ public class RepoDB {
 //        select.setString(3, type);
         return select.executeQuery();
     }
+
+    public ResultSet selectProjectVersion(String type, String artifactId) throws SQLException {
+        final String SELECT = "select " +
+                "  d.project, " +
+                "  d.artifact_id, " +
+                "  d.version, " +
+                "  c.commit_time " +
+                "from " +
+                "  (select " +
+                "     project, " +
+                "     commit_tag, " +
+                "     group_id, " +
+                "     artifact_id, " +
+                "     version " +
+                "   from dependencies " +
+                "   where artifact_id = ?) as d " +
+                "  inner join " +
+                "  (select " +
+                "     message, " +
+                "     project, " +
+                "     strftime('%Y-%m-%d', datetime(time / 1000, 'unixepoch')) as commit_time " +
+                "   from commits) as c " +
+                "    on d.project = c.project and d.commit_tag = c.message " +
+                "  inner join " +
+                "  (select " +
+                "     project, " +
+                "     repo_type " +
+                "   from repo_type " +
+                "   where repo_type = ?) as r " +
+                "    on d.project = r.project " +
+                "order by c.commit_time;";
+
+        PreparedStatement select = conn.getConn().prepareStatement(SELECT);
+        select.setString(1, artifactId);
+        select.setString(2, type);
+
+        return select.executeQuery();
+    }
 }

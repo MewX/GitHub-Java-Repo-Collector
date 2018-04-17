@@ -306,7 +306,7 @@ public class CalculateModification {
 
             writer.close();
 
-        Thread.sleep(3);
+            Thread.sleep(3);
         }
     }
 }

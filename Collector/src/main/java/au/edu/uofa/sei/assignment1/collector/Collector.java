@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
-public class Collector {
+public class Collector extends CollectorCommon {
     static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
         if(files!=null) { //some JVMs return null for empty dirs
@@ -44,10 +44,6 @@ public class Collector {
         // because github allows searching for 1000 results only,
         // therefore, using star size limit can expand the searching results:
         // https://api.github.com/search/repositories?q=language:java+stars:%3C1534&sort=stars&order=desc&per_page=100&page=10
-        Properties prop = new Properties();
-        prop.setProperty("log4j.rootLogger", "INFO");
-        PropertyConfigurator.configure(prop);
-
         final Conn c = new Conn(Constants.DB_NAME);
 
         // init db

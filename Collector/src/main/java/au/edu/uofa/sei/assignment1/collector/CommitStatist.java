@@ -16,14 +16,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class CommitStatist {
+public class CommitStatist extends CollectorCommon {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public static void main(String[] args) throws SQLException, IOException, GitAPIException {
-        Properties prop = new Properties();
-        prop.setProperty("log4j.rootLogger", "INFO");
-        PropertyConfigurator.configure(prop);
-
         int noOfGroups, groupId;
         noOfGroups = groupId = 0;
 

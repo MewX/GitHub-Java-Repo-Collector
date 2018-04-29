@@ -34,12 +34,8 @@ import java.util.*;
  * 5. commit author name
  * 6. commit author email
  */
-public class LogWalker {
+public class LogWalker extends CollectorCommon {
     public static void main(String[] args) throws SQLException, IOException, GitAPIException {
-        Properties prop = new Properties();
-        prop.setProperty("log4j.rootLogger", "INFO");
-        PropertyConfigurator.configure(prop);
-
         Conn c = new Conn(Constants.DB_NAME);
         CommitDb commitDb = new CommitDb(c);
 

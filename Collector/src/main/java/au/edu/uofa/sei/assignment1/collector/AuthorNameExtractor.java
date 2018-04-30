@@ -5,10 +5,7 @@ import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 import au.edu.uofa.sei.assignment1.collector.type.Contributor;
 import au.edu.uofa.sei.assignment1.collector.type.RepoCommit;
 import au.edu.uofa.sei.assignment1.collector.type.UserRepo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -102,8 +99,7 @@ public class AuthorNameExtractor extends CollectorCommon {
 
             // use gson
             Gson gson = new GsonBuilder().create();
-            JsonObject obj = gson.fromJson(json, JsonObject.class);
-            for (JsonElement ele : obj.getAsJsonArray()) {
+            for (JsonElement ele : gson.fromJson(json, JsonArray.class)) {
                 JsonObject contributor = ele.getAsJsonObject();
                 final String type = contributor.getAsJsonPrimitive("type").getAsString();
                 final String userName = contributor.getAsJsonPrimitive("login").getAsString();

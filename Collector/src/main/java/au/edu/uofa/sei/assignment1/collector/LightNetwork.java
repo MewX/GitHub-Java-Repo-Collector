@@ -1,5 +1,7 @@
 package au.edu.uofa.sei.assignment1.collector;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
@@ -51,6 +53,9 @@ public class LightNetwork {
             httpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
             httpURLConnection.setConnectTimeout(16000);
             httpURLConnection.setReadTimeout(16000);
+
+            String basicAuth = "Basic " + new String(new Base64().encode("mseopt:mseopt@gmail.com".getBytes()));
+            httpURLConnection.setRequestProperty ("Authorization", basicAuth);
 
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 inputStream = httpURLConnection.getErrorStream();

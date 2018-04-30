@@ -46,7 +46,7 @@ public class AuthorNameExtractor extends CollectorCommon {
         int idxRepo = 0;
         final Contributor contributor = new Contributor();
         while (idxRepo < repos.size() && contributor.checkExistence(repos.get(idxRepo), queryDb)) idxRepo++;
-        idxRepo--;
+        if (idxRepo > 0) idxRepo --;
 
         // continue from where it was left
         Map<String, String> prevReq = null;
@@ -65,7 +65,7 @@ public class AuthorNameExtractor extends CollectorCommon {
         int idxUser = 0;
         while (idxUser < contributorList.size() && userRepo.checkExistence(contributorList.get(idxUser).userName, queryDb))
             idxUser++;
-        idxUser--; // recover to the last one
+        if (idxUser > 0) idxUser--; // recover to the last one
 
         for (; idxUser < contributorList.size(); idxUser ++) {
             prevReq = userRepo.collect(contributorList.get(idxUser).userName, prevReq, queryDb);

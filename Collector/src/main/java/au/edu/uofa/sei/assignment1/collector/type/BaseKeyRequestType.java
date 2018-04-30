@@ -74,21 +74,24 @@ public abstract class BaseKeyRequestType {
      */
     public Map<String, String> collect(String key, Map<String, String> prevReq, QueryDb db) throws SQLException {
         final Pattern lastPattern = Pattern.compile("<.+?[^_]page=(\\d+)>;\\s*rel=\"last\"");
+        final String LINK_KEY = "Link";
 
         // do request for the first one
         int page = 1;
         int maxPage = page;
         Map<String, String> prev = makeRequest(page, key, prevReq, db);
-        Matcher matcher = lastPattern.matcher(prev.get("Link"));
-        if (matcher.find()) {
-            maxPage = Integer.valueOf(matcher.group(1));
-        } else {
-            System.err.println("INFO - Only one page found in " + TYPE + " request");
-        }
+        if (prev != null && prev.containsKey(LINK_KEY)) {
+            Matcher matcher = lastPattern.matcher(prev.get(LINK_KEY));
+            if (matcher.find()) {
+                maxPage = Integer.valueOf(matcher.group(1));
+            } else {
+                System.err.println("INFO - Only one page found in " + TYPE + " request");
+            }
 
-        // loop through every page
-        for (page += 1; page < maxPage; page++) {
-            prev = makeRequest(page, key, prev, db);
+            // loop through every page
+            for (page += 1; page < maxPage; page++) {
+                prev = makeRequest(page, key, prev, db);
+            }
         }
         return prev;
     }

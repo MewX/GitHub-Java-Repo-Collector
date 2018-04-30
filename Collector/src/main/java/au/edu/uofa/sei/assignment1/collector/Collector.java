@@ -3,11 +3,11 @@ package au.edu.uofa.sei.assignment1.collector;
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
 import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 import au.edu.uofa.sei.assignment1.collector.type.Repository;
+import au.edu.uofa.sei.assignment1.collector.type.UserRepo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -18,14 +18,25 @@ import java.nio.file.StandardCopyOption;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.List;
 
 public class Collector extends CollectorCommon {
+
+    static class ProjectInfo {
+        public String name, gitUrl;
+
+        public ProjectInfo(String name, String gitUrl) {
+            this.name = name;
+            this.gitUrl = gitUrl;
+        }
+    }
+
+
     static void deleteFolder(File folder) {
         File[] files = folder.listFiles();
-        if(files!=null) { //some JVMs return null for empty dirs
-            for(File f: files) {
-                if(f.isDirectory()) {
+        if (files != null) { //some JVMs return null for empty dirs
+            for (File f : files) {
+                if (f.isDirectory()) {
                     deleteFolder(f);
                 } else {
                     f.delete();
@@ -53,8 +64,17 @@ public class Collector extends CollectorCommon {
 //        Repository.collectingRepos(db);
 
         // get all list from database
-        ArrayList<String> repoNames = new ArrayList<>(), repoUrls = new ArrayList<>();
-        ResultSet rs = db.select(Repository.TYPE);
+        String type = Repository.TYPE;
+        if (args.length > 0 && Integer.valueOf(args[0]) == 2) type = new UserRepo().TYPE;
+        ArrayList<ProjectInfo> repos = getProjectInfoList(type, db);
+        cloneAll(repos);
+
+        c.close();
+    }
+
+    public static ArrayList<ProjectInfo> getProjectInfoList(final String type, QueryDb db) throws SQLException {
+        ArrayList<ProjectInfo> repos = new ArrayList<>();
+        ResultSet rs = db.select(type);
         while (rs.next()) {
             String json = rs.getString("content");
 
@@ -63,25 +83,28 @@ public class Collector extends CollectorCommon {
             JsonObject obj = gson.fromJson(json, JsonObject.class);
             for (JsonElement ele : obj.getAsJsonArray("items")) {
                 JsonObject repo = ele.getAsJsonObject();
-                repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
-                repoUrls.add(repo.getAsJsonPrimitive("git_url").getAsString());
+                repos.add(new ProjectInfo(repo.getAsJsonPrimitive("full_name").getAsString(),
+                        repo.getAsJsonPrimitive("git_url").getAsString()));
             }
         }
+        return repos;
+    }
 
+    public static void cloneAll(List<ProjectInfo> repos) throws IOException, GitAPIException {
         // clear temp folder, clone to temp folder first, them move to the real folder
         deleteFolder(new File(Constants.TEMP_PATH));
         new File(Constants.TEMP_PATH).mkdirs();
 
         // clone all
         new File(Constants.BASE_PATH).mkdirs();
-        for (int i = 0; i < repoNames.size(); i ++) {
-            String finalFolderName = Constants.BASE_PATH + repoNames.get(i);
-            String tempFolderName = Constants.TEMP_PATH + repoNames.get(i);
+        for (int i = 0; i < repos.size(); i++) {
+            String finalFolderName = Constants.BASE_PATH + repos.get(i).name;
+            String tempFolderName = Constants.TEMP_PATH + repos.get(i).name;
             if (!new File(finalFolderName).exists()) {
                 // clone
-                System.err.format("(%d/%d) Cloning %s into %s...\n", i, repoNames.size(), repoNames.get(i), tempFolderName);
+                System.err.format("(%d/%d) Cloning %s into %s...\n", i, repos.size(), repos.get(i).name, tempFolderName);
                 Git result = Git.cloneRepository()
-                        .setURI(repoUrls.get(i))
+                        .setURI(repos.get(i).gitUrl)
                         .setDirectory(new File(tempFolderName))
                         .call();
                 result.close();
@@ -92,7 +115,5 @@ public class Collector extends CollectorCommon {
                 Files.move(new File(tempFolderName).toPath(), new File(finalFolderName).toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
-
-        c.close();
     }
 }

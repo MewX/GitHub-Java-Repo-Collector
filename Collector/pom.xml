@@ -39,7 +39,8 @@
                         <manifest>
                             <!--<mainClass>au.edu.uofa.sei.assignment1.collector.Collector</mainClass>-->
                             <!--<mainClass>au.edu.uofa.sei.assignment1.collector.LogWalker</mainClass>-->
-                            <mainClass>au.edu.uofa.sei.assignment1.collector.CommitStatist</mainClass>
+                            <!--<mainClass>au.edu.uofa.sei.assignment1.collector.CommitStatist</mainClass>-->
+                            <mainClass>au.edu.uofa.sei.assignment1.collector.AuthorNameExtractor</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

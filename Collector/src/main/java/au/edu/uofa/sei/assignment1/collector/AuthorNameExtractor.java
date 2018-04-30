@@ -3,6 +3,7 @@ package au.edu.uofa.sei.assignment1.collector;
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
 import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 import au.edu.uofa.sei.assignment1.collector.type.Contributor;
+import au.edu.uofa.sei.assignment1.collector.type.RepoCommit;
 import au.edu.uofa.sei.assignment1.collector.type.UserRepo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -61,7 +62,7 @@ public class AuthorNameExtractor extends CollectorCommon {
         List<UserInfo> contributorList = getContributorRepoLists(c);
 
         // get all repos of the users
-        UserRepo userRepo = new UserRepo();
+        final UserRepo userRepo = new UserRepo();
         int idxUser = 0;
         while (idxUser < contributorList.size() && userRepo.checkExistence(contributorList.get(idxUser).userName, queryDb))
             idxUser++;
@@ -70,6 +71,18 @@ public class AuthorNameExtractor extends CollectorCommon {
         for (; idxUser < contributorList.size(); idxUser ++) {
             prevReq = userRepo.collect(contributorList.get(idxUser).userName, prevReq, queryDb);
         }
+
+        // 4. get commits
+        final RepoCommit repoCommit = new RepoCommit();
+        int idxRepoCommit = 0;
+        while (idxRepoCommit < repos.size() && repoCommit.checkExistence(repos.get(idxRepoCommit), queryDb))
+            idxRepoCommit++;
+        if (idxRepoCommit > 0) idxRepoCommit--;
+
+        for (; idxRepoCommit < repos.size(); idxRepoCommit++) {
+            prevReq = repoCommit.collect(repos.get(idxRepoCommit), prevReq, queryDb);
+        }
+
         System.err.println("Done collecting");
 
         // get all repository list

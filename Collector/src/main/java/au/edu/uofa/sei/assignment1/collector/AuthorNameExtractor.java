@@ -98,15 +98,21 @@ public class AuthorNameExtractor extends CollectorCommon {
             String json = rs.getString("content"); // content column
 
             // use gson
-            Gson gson = new GsonBuilder().create();
-            for (JsonElement ele : gson.fromJson(json, JsonArray.class)) {
-                JsonObject contributor = ele.getAsJsonObject();
-                final String type = contributor.getAsJsonPrimitive("type").getAsString();
-                final String userName = contributor.getAsJsonPrimitive("login").getAsString();
-                final String reposUrl = contributor.getAsJsonPrimitive("repos_url").getAsString();
-                if (type.equalsIgnoreCase("user")) {
-                    results.add(new UserInfo(userName, reposUrl));
+            try {
+                Gson gson = new GsonBuilder().create();
+                JsonObject obj = gson.fromJson(json, JsonObject.class);
+                for (JsonElement ele : obj.getAsJsonArray()) {
+                    JsonObject contributor = ele.getAsJsonObject();
+                    final String type = contributor.getAsJsonPrimitive("type").getAsString();
+                    final String userName = contributor.getAsJsonPrimitive("login").getAsString();
+                    final String reposUrl = contributor.getAsJsonPrimitive("repos_url").getAsString();
+                    if (type.equalsIgnoreCase("user")) {
+                        results.add(new UserInfo(userName, reposUrl));
+                    }
                 }
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+                System.err.println("Error in content: " + json);
             }
         }
         return results;

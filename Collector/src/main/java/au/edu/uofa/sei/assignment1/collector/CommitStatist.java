@@ -3,7 +3,7 @@ package au.edu.uofa.sei.assignment1.collector;
 import au.edu.adelaide.edu.sei.assignment1.parser.Parser;
 import au.edu.uofa.sei.assignment1.collector.db.CommitDb;
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
-import org.apache.log4j.PropertyConfigurator;
+import au.edu.uofa.sei.assignment1.collector.type.Repository;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -14,7 +14,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class CommitStatist extends CollectorCommon {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -58,7 +61,7 @@ public class CommitStatist extends CollectorCommon {
         c.getConn().setAutoCommit(false);
 
         // get all list from database
-        ArrayList<String> repoNames = LogWalker.getRepos(c); // the order does not change
+        ArrayList<String> repoNames = LogWalker.getRepos(Repository.TYPE, c); // the order does not change
 
         // select
         final String dependencyDbName = "dep" + (groupId + 1) + "of" + noOfGroups + ".db";

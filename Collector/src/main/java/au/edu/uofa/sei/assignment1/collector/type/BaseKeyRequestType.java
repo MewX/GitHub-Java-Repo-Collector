@@ -100,7 +100,7 @@ public abstract class BaseKeyRequestType {
      * check whether a param exists
      *
      * @param key the query key
-     * @param db  the table hander
+     * @param db  the table handler
      * @return true - existing; otherwise false
      */
     public boolean checkExistence(String key, QueryDb db) {

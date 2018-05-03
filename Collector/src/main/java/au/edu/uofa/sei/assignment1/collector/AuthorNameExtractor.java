@@ -1,10 +1,10 @@
 package au.edu.uofa.sei.assignment1.collector;
 
 import au.edu.uofa.sei.assignment1.collector.db.Conn;
+import au.edu.uofa.sei.assignment1.collector.db.PropertyDb;
 import au.edu.uofa.sei.assignment1.collector.db.QueryDb;
 import au.edu.uofa.sei.assignment1.collector.type.Contributor;
 import au.edu.uofa.sei.assignment1.collector.type.RepoCommit;
-import au.edu.uofa.sei.assignment1.collector.type.Repository;
 import au.edu.uofa.sei.assignment1.collector.type.UserRepo;
 import com.google.gson.*;
 
@@ -49,20 +49,14 @@ public class AuthorNameExtractor extends CollectorCommon {
         // find the last one existing in the database
         Map<String, String> prevReq = collectContributorList(repos, queryDb, null);
         List<UserInfo> contributorList = getContributorRepoLists(c);
+        System.err.println("INFO - finished collecting contributor list.");
 
         // get all repos of the users
         prevReq = collectUserRepoList(contributorList, queryDb, prevReq);
+        System.err.println("INFO - finished collecting user repo list.");
         // update repos with user name
-        repos = getRepos(c);
-        System.err.println("INFO - Found " + repos.size() + " user projects.");
-
-        // 4. get commits
-        // here collect only the user's commits
-        collectRepoCommitList(repos, queryDb, prevReq);
+        processUserRepos(c, prevReq);
         System.err.println("Done collecting");
-
-        // get all repository list
-        // execute Collector 2
 
         c.close();
     }
@@ -129,40 +123,43 @@ public class AuthorNameExtractor extends CollectorCommon {
         return prevReq;
     }
 
-    private static Map<String, String> collectRepoCommitList(List<String> repos, QueryDb queryDb, Map<String, String> prevReq) throws SQLException {
-        final RepoCommit repoCommit = new RepoCommit();
-        int idxRepoCommit = 0;
-        while (idxRepoCommit < repos.size() && repoCommit.checkExistence(buildRepoCommitKey(repos.get(idxRepoCommit)), queryDb))
-            idxRepoCommit++;
-        if (idxRepoCommit > 0) idxRepoCommit--;
-
-        for (; idxRepoCommit < repos.size(); idxRepoCommit++) {
-            prevReq = repoCommit.collect(buildRepoCommitKey(repos.get(idxRepoCommit)), prevReq, queryDb);
-        }
-        return prevReq;
-    }
-
     private static String buildRepoCommitKey(String projectName) {
         String userName = projectName.substring(0, projectName.indexOf("/"));
         return projectName + "," + userName;
     }
 
-    static ArrayList<String> getRepos(Conn conn) throws SQLException {
+    static void processUserRepos(Conn conn, Map<String, String> prevReq) throws SQLException {
         QueryDb queryDb = new QueryDb(conn);
+        final RepoCommit repoCommit = new RepoCommit();
+        int savedId = 0;
 
-        ArrayList<String> repoNames = new ArrayList<>();
-        ResultSet rs = queryDb.select(new UserRepo().TYPE);
+        PropertyDb propertyDb = new PropertyDb(conn);
+        String savedIdString = propertyDb.get(Constants.PROPERTY_USERREPO_SAVE_ID);
+        if (savedIdString != null) savedId = Integer.valueOf(savedIdString);
+
+        ResultSet rs = queryDb.select(new UserRepo().TYPE, savedId);
         while (rs.next()) {
-            String json = rs.getString("content");
+            final String json = rs.getString("content");
+            final Integer id = rs.getInt("id");
 
             // use gson
-            Gson gson = new GsonBuilder().create();
-            for (JsonElement ele : gson.fromJson(json, JsonArray.class)) {
-                JsonObject repo = ele.getAsJsonObject();
-                repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
+            try {
+                Gson gson = new GsonBuilder().create();
+                for (JsonElement ele : gson.fromJson(json, JsonArray.class)) {
+                    JsonObject repo = ele.getAsJsonObject();
+
+                    // 4. get commits
+                    // here collect only the user's commits
+                    prevReq = repoCommit.collect(buildRepoCommitKey(repo.getAsJsonPrimitive("full_name").getAsString()), prevReq, queryDb);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("Error in content: " + json);
             }
+
+            // finished this one
+            propertyDb.put(Constants.PROPERTY_USERREPO_SAVE_ID, id.toString());
         }
-        return repoNames;
     }
 
 }

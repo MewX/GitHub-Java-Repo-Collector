@@ -12,4 +12,6 @@ public class Constants {
     public static final String DB_NAME = "repo.db";
     public static final String TEMP_PATH = "temp/";
     public static final String BASE_PATH = "java-repos/";
+
+    public static final String PROPERTY_USERREPO_SAVE_ID = "USERREPO_SAVE_ID"; // the last finished user repo index for collecting project commits
 }

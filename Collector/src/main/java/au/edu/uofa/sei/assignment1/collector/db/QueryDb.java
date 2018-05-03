@@ -31,11 +31,16 @@ public class QueryDb {
         insert.execute();
     }
 
-    public ResultSet select(String type) throws SQLException {
-        final String SELECT = "SELECT * FROM queries WHERE type = ? ORDER BY id;"; // make sure it's in order
+    public ResultSet select(String type, int id) throws SQLException {
+        final String SELECT = "SELECT * FROM queries WHERE type = ? and id > ? ORDER BY id;"; // make sure it's in order
         PreparedStatement select = conn.getConn().prepareStatement(SELECT);
         select.setString(1, type);
+        select.setInt(2, id); // id is stored into properties when this id is finished collecting
         return select.executeQuery();
+    }
+
+    public ResultSet select(String type) throws SQLException {
+        return select(type, 0);
     }
 
     public boolean checkExistence(String type, String requestParams) throws SQLException {

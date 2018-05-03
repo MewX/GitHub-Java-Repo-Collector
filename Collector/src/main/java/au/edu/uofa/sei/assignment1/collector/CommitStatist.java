@@ -61,7 +61,7 @@ public class CommitStatist extends CollectorCommon {
         c.getConn().setAutoCommit(false);
 
         // get all list from database
-        ArrayList<String> repoNames = LogWalker.getRepos(Repository.TYPE, c); // the order does not change
+        ArrayList<String> repoNames = LogWalker.getRepos(c); // the order does not change
 
         // select
         final String dependencyDbName = "dep" + (groupId + 1) + "of" + noOfGroups + ".db";

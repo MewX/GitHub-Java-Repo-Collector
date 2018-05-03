@@ -40,7 +40,7 @@ public class LogWalker extends CollectorCommon {
         CommitDb commitDb = new CommitDb(c);
 
         // get all list from database
-        ArrayList<String> repoNames = getRepos(Repository.TYPE, c); // the order does not change
+        ArrayList<String> repoNames = getRepos(c); // the order does not change
 //        List<String> repoNames = Collections.singletonList("DDDM-Assignments"); // the order does not change
 
         // find the last repo that was fetched and continue
@@ -62,11 +62,11 @@ public class LogWalker extends CollectorCommon {
         c.close();
     }
 
-    static ArrayList<String> getRepos(String type, Conn conn) throws SQLException {
+    static ArrayList<String> getRepos(Conn conn) throws SQLException {
         QueryDb queryDb = new QueryDb(conn);
 
         ArrayList<String> repoNames = new ArrayList<>();
-        ResultSet rs = queryDb.select(type);
+        ResultSet rs = queryDb.select(Repository.TYPE);
         while (rs.next()) {
             String json = rs.getString("content");
 

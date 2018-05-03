@@ -44,7 +44,7 @@ public class AuthorNameExtractor extends CollectorCommon {
         // read the database content and extract the author names
         Conn c = new Conn(Constants.DB_NAME);
         QueryDb queryDb = new QueryDb(c);
-        List<String> repos = LogWalker.getRepos(Repository.TYPE, c); // 1. get project list
+        List<String> repos = LogWalker.getRepos(c); // 1. get project list
 
         // find the last one existing in the database
         Map<String, String> prevReq = collectContributorList(repos, queryDb, null);
@@ -53,7 +53,7 @@ public class AuthorNameExtractor extends CollectorCommon {
         // get all repos of the users
         prevReq = collectUserRepoList(contributorList, queryDb, prevReq);
         // update repos with user name
-        repos = LogWalker.getRepos(new UserRepo().TYPE, c);
+        repos = getRepos(c);
         System.err.println("INFO - Found " + repos.size() + " user projects.");
 
         // 4. get commits
@@ -145,6 +145,24 @@ public class AuthorNameExtractor extends CollectorCommon {
     private static String buildRepoCommitKey(String projectName) {
         String userName = projectName.substring(0, projectName.indexOf("/"));
         return projectName + "," + userName;
+    }
+
+    static ArrayList<String> getRepos(Conn conn) throws SQLException {
+        QueryDb queryDb = new QueryDb(conn);
+
+        ArrayList<String> repoNames = new ArrayList<>();
+        ResultSet rs = queryDb.select(new UserRepo().TYPE);
+        while (rs.next()) {
+            String json = rs.getString("content");
+
+            // use gson
+            Gson gson = new GsonBuilder().create();
+            for (JsonElement ele : gson.fromJson(json, JsonArray.class)) {
+                JsonObject repo = ele.getAsJsonObject();
+                repoNames.add(repo.getAsJsonPrimitive("full_name").getAsString());
+            }
+        }
+        return repoNames;
     }
 
 }

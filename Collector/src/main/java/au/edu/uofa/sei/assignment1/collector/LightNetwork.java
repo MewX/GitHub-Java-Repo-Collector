@@ -60,9 +60,9 @@ public class LightNetwork {
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {
                 inputStream = httpURLConnection.getErrorStream();
             } else if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_FORBIDDEN) {
+                // not exiting directly, but keeping the response
                 System.out.println("403 forbidden: " + System.currentTimeMillis());
-                System.exit(-1);
-                return ret;
+                inputStream = httpURLConnection.getErrorStream();
             } else if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 System.out.println("ERROR: got " + httpURLConnection.getResponseCode() + " in " + url);
                 inputStream = httpURLConnection.getErrorStream();

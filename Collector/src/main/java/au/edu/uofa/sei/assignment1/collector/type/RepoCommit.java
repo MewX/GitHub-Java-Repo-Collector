@@ -20,7 +20,7 @@ public class RepoCommit extends BaseKeyRequestType {
         String[] p = projectNameAndUserName.split(",");
 
         StringBuilder query = new StringBuilder(); // the query without APP ID
-        query.append(p[0]).append("/commits?author=").append(p[1]).append("per_page=100");
+        query.append(p[0]).append("/commits?author=").append(p[1]).append("&per_page=100");
         if (page > 1) {
             // not first page
             query.append("&page=").append(page);

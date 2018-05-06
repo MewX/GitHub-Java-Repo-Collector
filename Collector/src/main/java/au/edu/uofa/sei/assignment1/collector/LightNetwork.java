@@ -63,6 +63,7 @@ public class LightNetwork {
                 // not exiting directly, but keeping the response
                 System.out.println("403 forbidden: " + System.currentTimeMillis());
                 inputStream = httpURLConnection.getErrorStream();
+                // this allows some 451/409/500/502/... errors continue the program, but the collected data should be filtered
             } else if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 System.out.println("ERROR: got " + httpURLConnection.getResponseCode() + " in " + url);
                 inputStream = httpURLConnection.getErrorStream();
@@ -113,7 +114,9 @@ public class LightNetwork {
     }
 
     public static void waitUntilRefresh(Map<String, String> requestResult) {
-        if (requestResult == null) return;
+        if (requestResult == null || !requestResult.containsKey(Constants.HEADER_X_RATELIMIT_REMAINING)
+                || !requestResult.containsKey(Constants.HEADER_X_RATELIMIT_LIMIT)
+                || !requestResult.containsKey(Constants.HEADER_X_RATELIMIT_RESET)) return;
 
         long remaining  = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_REMAINING));
         long total = Long.valueOf(requestResult.get(Constants.HEADER_X_RATELIMIT_LIMIT));

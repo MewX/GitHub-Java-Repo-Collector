@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public abstract class BaseKeyRequestType {
     final public String TYPE;
 
-    BaseKeyRequestType(String type) {
+    public BaseKeyRequestType(String type) {
         TYPE = type;
     }
 

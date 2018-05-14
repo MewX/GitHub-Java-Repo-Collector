@@ -54,7 +54,7 @@ public class LightNetwork {
             httpURLConnection.setConnectTimeout(16000);
             httpURLConnection.setReadTimeout(16000);
 
-            String basicAuth = "Basic " + new String(new Base64().encode("mseopt:mseopt@gmail.com".getBytes()));
+            String basicAuth = "Basic " + new String(new Base64().encode("testSEIResearch:sei123456".getBytes()));
             httpURLConnection.setRequestProperty ("Authorization", basicAuth);
 
             if (httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) {

@@ -44,7 +44,7 @@ public class CommitDetailFetcher extends CollectorCommon {
             c.getConn().setAutoCommit(false);
 
             // fetch this commit
-            new RepoCommitDetail().makeRequest(0, username + "/" + project + "," + hash, prev, queryDb);
+            prev = new RepoCommitDetail().makeRequest(0, username + "/" + project + "," + hash, prev, queryDb);
 
             // update the progress
             propertyDb.put(Constants.PROPERTY_COMMIT_DETAIL_FETCHING_ID, Integer.toString(id));
@@ -52,6 +52,7 @@ public class CommitDetailFetcher extends CollectorCommon {
             // commit every 500 fetches
             if (counter % 500 == 0) {
                 c.getConn().commit();
+                System.err.println("Committed");
             }
         }
 

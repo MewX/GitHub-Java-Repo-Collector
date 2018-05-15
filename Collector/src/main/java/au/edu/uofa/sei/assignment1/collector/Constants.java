@@ -14,4 +14,5 @@ public class Constants {
     public static final String BASE_PATH = "java-repos/";
 
     public static final String PROPERTY_USERREPO_SAVE_ID = "USERREPO_SAVE_ID"; // the last finished user repo index for collecting project commits
+    public static final String PROPERTY_COMMIT_DETAIL_FETCHING_ID = "COMMIT_DETAIL_FETCHING_ID";
 }

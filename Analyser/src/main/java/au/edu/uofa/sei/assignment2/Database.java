@@ -28,4 +28,11 @@ public class Database {
         select.setString(1, "%/commits?author=" + username + "&%");
         return select.executeQuery();
     }
+
+    public ResultSet getCommitDetail() throws SQLException {
+        final String SELECT = "select params, content from queries where type = 'RepoCommitDetail';";
+
+        PreparedStatement select = conn.getConn().prepareStatement(SELECT);
+        return select.executeQuery();
+    }
 }

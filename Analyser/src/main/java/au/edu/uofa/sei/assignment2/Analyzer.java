@@ -20,11 +20,13 @@ public class Analyzer {
         final Conn connection = new Conn("/Users/nick/Documents/学习资料/2018.S1/SEI/Assignment/Research 2/data/commit.db");
         CommitDatabase db = new CommitDatabase(connection);
 
-        List<String> userList = FileUtils.readLines(new File("Users.csv"));
+        List<String> userList = FileUtils.readLines(new File("user_list_valid.csv"));
 
-        String outputFilename = "results.csv";
+//        String outputFilename = "results.csv";
+        String outputFilename = "results_detail.csv";
         BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilename, true));
-        writer.append("user, average active day/week, average project/week, average project/day, average commits/week, average adding/week, average deleting/week, average number of files/week, average focus/week\n");
+//        writer.append("user, average active day/week, average project/week, average project/day, average commits/week, average adding/week, average deleting/week, average number of files/week, average focus/week\n");
+        writer.append("user, week index, active day, projects, projects/day, focus, commits, adding, deleting, number of files\n");
 
         Map<Integer, Integer> dayCount = new HashMap<>();
         Map<Integer, Integer> hourCount = new HashMap<>();
@@ -44,7 +46,7 @@ public class Analyzer {
                 int total = resultSet.getInt("total");
                 int adding = resultSet.getInt("adding");
                 int deleting = resultSet.getInt("deleting");
-                int numberOfFileChange = resultSet.getInt("fileschange");
+                int numberOfFileChange = resultSet.getInt("fileschanged");
 
                 DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
                 LocalDateTime dateTime = formatter.parseLocalDateTime(date);
@@ -101,55 +103,72 @@ public class Analyzer {
                 }
             }
 
-            // summary data for the user
-            int validWeek = 0;
-            int totalActiveDays = 0;
-            int totalProjectsWeek = 0;
-            float totalProjectsPerDay = 0;
-            int totalCommits = 0;
-            int totalAdding = 0;
-            int totalDeleting = 0;
-            int totalNumberOfFiles = 0;
-            float totalFocus = 0;
+            // summary data for the user, for average
+//            int validWeek = 0;
+//            int totalActiveDays = 0;
+//            int totalProjectsWeek = 0;
+//            float totalProjectsPerDay = 0;
+//            int totalCommits = 0;
+//            int totalAdding = 0;
+//            int totalDeleting = 0;
+//            int totalNumberOfFiles = 0;
+//            float totalFocus = 0;
+//
+//            for (int j = 0; j < 52; j++) {
+//                if (weekExist[j]) {
+//                    WeekCount weekCount = weekCounts[j];
+//
+//                    totalActiveDays += weekCount.activeDays.size();
+//                    totalProjectsWeek += weekCount.projects.size();
+//                    totalProjectsPerDay += weekCount.getAverageProjectPerDay();
+//                    totalCommits += weekCount.numberOfCommits;
+//                    totalAdding += weekCount.numberOfAdding;
+//                    totalDeleting += weekCount.numberOfDeleting;
+//                    totalNumberOfFiles += weekCount.numberOfFiles;
+//                    totalFocus += weekCount.getsFocus();
+//
+//                    validWeek++;
+//                }
+//            }
+//
+//            // output
+//            System.out.println(username);
+//            System.out.println("average active day/week: " + totalActiveDays * 1.0 / validWeek);
+//            System.out.println("average project/week: " + totalProjectsWeek * 1.0 / validWeek);
+//            System.out.println("average project/day: " + totalProjectsPerDay / validWeek);
+//            System.out.println("average commits/week: " + totalCommits * 1.0 / validWeek);
+//            System.out.println("average adding/week: " + totalAdding * 1.0 / validWeek);
+//            System.out.println("average deleting/week: " + totalDeleting * 1.0 / validWeek);
+//            System.out.println("average number of files/week: " + totalNumberOfFiles * 1.0 / validWeek);
+//            System.out.println("average focus/week: " + totalFocus / validWeek);
+//
+//            String temp = username + "," + totalActiveDays * 1.0 / validWeek + "," +
+//                    totalProjectsWeek * 1.0 / validWeek + "," + totalProjectsPerDay / validWeek + "," +
+//                    totalCommits * 1.0 / validWeek + "," + totalAdding * 1.0 / validWeek + "," +
+//                    totalDeleting * 1.0 / validWeek + "," + totalNumberOfFiles * 1.0 / validWeek + ", " +
+//                    totalFocus / validWeek;
 
+//            writer.append(temp);
+//            writer.append("\n");
+
+            // detailed weekly data
             for (int j = 0; j < 52; j++) {
                 if (weekExist[j]) {
                     WeekCount weekCount = weekCounts[j];
 
-                    totalActiveDays += weekCount.activeDays.size();
-                    totalProjectsWeek += weekCount.projects.size();
-                    totalProjectsPerDay += weekCount.getAverageProjectPerDay();
-                    totalCommits += weekCount.numberOfCommits;
-                    totalAdding += weekCount.numberOfAdding;
-                    totalDeleting += weekCount.numberOfDeleting;
-                    totalNumberOfFiles += weekCount.numberOfFiles;
-                    totalFocus += weekCount.getsFocus();
+                    String temp = username + "," + (weekCount.weekIndex+1) + "," + weekCount.activeDays.size() + "," +
+                            weekCount.projects.size() + "," + weekCount.getAverageProjectPerDay() + "," +
+                            weekCount.getsFocus() + "," + weekCount.numberOfCommits + "," +
+                            weekCount.numberOfAdding + "," + weekCount.numberOfDeleting + "," +
+                            weekCount.numberOfFiles;
 
-                    validWeek++;
+                    writer.append(temp);
+                    writer.append("\n");
                 }
             }
-
-            // output
-            System.out.println(username);
-            System.out.println("average active day/week: " + totalActiveDays * 1.0 / validWeek);
-            System.out.println("average project/week: " + totalProjectsWeek * 1.0 / validWeek);
-            System.out.println("average project/day: " + totalProjectsPerDay / validWeek);
-            System.out.println("average commits/week: " + totalCommits * 1.0 / validWeek);
-            System.out.println("average adding/week: " + totalAdding * 1.0 / validWeek);
-            System.out.println("average deleting/week: " + totalDeleting * 1.0 / validWeek);
-            System.out.println("average number of files/week: " + totalNumberOfFiles * 1.0 / validWeek);
-            System.out.println("average focus/week: " + totalFocus / validWeek);
-
-            String temp = username + "," + totalActiveDays * 1.0 / validWeek + "," +
-                    totalProjectsWeek * 1.0 / validWeek + "," + totalProjectsPerDay / validWeek + "," +
-                    totalCommits * 1.0 / validWeek + "," + totalAdding * 1.0 / validWeek + "," +
-                    totalDeleting * 1.0 / validWeek + "," + totalNumberOfFiles * 1.0 / validWeek + ", " +
-                    totalFocus / validWeek;
-
-            writer.append(temp);
-            writer.append("\n");
         }
 
+        // total data
 //        writer.append("\n\n");
 //        writer.append("total: \n");
 //

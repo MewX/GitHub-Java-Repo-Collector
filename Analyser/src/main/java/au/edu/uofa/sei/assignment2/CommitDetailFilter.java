@@ -39,6 +39,12 @@ public class CommitDetailFilter {
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(json);
             JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+            if (jsonObject.get("stats") == null) {
+                System.out.println(params);
+                continue;
+            }
+
             JsonObject statsObject = jsonObject.get("stats").getAsJsonObject();
             JsonArray filesArray = jsonObject.get("files").getAsJsonArray();
 

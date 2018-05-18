@@ -14,7 +14,7 @@ public class CommitDatabase {
     }
 
     public ResultSet getCommitByUser(String username) throws SQLException {
-        final String SELECT = "select username, count.project, count.sha, time, total, adding, deleting, fileschange " +
+        final String SELECT = "select username, count.project, count.sha, time, total, adding, deleting, fileschanged " +
                 "from commit_detail, count " +
                 "where count.sha = commit_detail.sha and count.username = commit_detail.user " +
                 "   and count.project = commit_detail.project and username = ?;";
